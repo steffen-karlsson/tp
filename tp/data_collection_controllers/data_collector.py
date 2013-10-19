@@ -11,3 +11,11 @@ def get_review_url(company_address, page=None):
 
 def get_category_url(category):
     return '{}{}'.format(CATEGORY_BASEURL, category)
+def save_user(data):
+    review_count = int(data['review_count'].split()[0])
+    name = data['name']
+    #todo: name used to find gender of user
+    user = User(gender='und',
+                review_count=review_count)
+    user.save()
+    return user
