@@ -17,7 +17,7 @@ class Company(BaseModel):
     company = PrimaryKeyField(db_column='company_id')
     domain_name = CharField()
     review_count = IntegerField()
-    updated_at = IntegerField()
+    reviews_updated_at = IntegerField()
 
     class Meta:
         db_table = 'company'
@@ -58,6 +58,7 @@ class Review(BaseModel):
     rating = IntegerField()
     review = PrimaryKeyField(db_column='review_id')
     title = CharField(null=True)
+    tp_review = IntegerField(db_column='tp_review_id')
     user = ForeignKeyField(db_column='user_id', rel_model=User)
 
     class Meta:
