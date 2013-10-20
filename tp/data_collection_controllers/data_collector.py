@@ -47,3 +47,21 @@ def save_user(data):
                 review_count=review_count)
     user.save()
     return user
+
+
+def __update_company(data, company):
+    Company.update(review_count=data['review_count']).where(
+        Company.company == company.company)
+    utc_now = to_utc_timstamp(now())
+    Rating(company=company.company,
+           created_at=utc_now,
+           group="tp",
+           value=data['tp_score']).save()
+
+
+def to_utc_timstamp(timestamp):
+    return datetime.utcfromtimestamp(float(timestamp)).strftime('%s')
+
+
+def now():
+    return int(str(time()).split('.')[0])
