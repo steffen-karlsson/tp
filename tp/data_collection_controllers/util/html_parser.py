@@ -10,14 +10,16 @@ from HTMLParser import HTMLParser
 #
 #
 # v. 0.2.0
-# By Rune Thor Mårtensson
+# By Rune Thor MÃ¥rtensson
 # TODO: 
 # - Sphinx documentation
 # - Make sure it works with tags without ends (br, hr and so on)
 # - Improve performance
 # - Implement a proper exception
 ##
-class sax_style_HTML_Parser(HTMLParser):
+
+
+class HTMLParser(HTMLParser):
 
     def __init__(self, parsing_pattern):
         HTMLParser.__init__(self)
