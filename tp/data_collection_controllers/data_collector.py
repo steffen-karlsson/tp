@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from tp.orm.models import Company, Review, User
 from tp.orm.models import Rating, Category, CategoryPosition
 from datetime import datetime

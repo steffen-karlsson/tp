@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from peewee import *
 
 #database = MySQLDatabase('tp', **{'passwd': 'SKAjdlkwq3nsjd3if993', 'user': 'tp'})
