@@ -7,6 +7,8 @@ from datetime import datetime
 from peewee import DoesNotExist
 from time import time
 from util.downloader import download, DownloadFailError
+from parser_factory import _create_category_parser, _create_review_parser
+import pprint.pprint as pr
 
 TP_BASEURL = 'http://www.trustpilot.dk/'
 REVIEW_BASEURL = "{}review/".format(TP_BASEURL)
@@ -42,6 +44,10 @@ def companies_for_category(category_name):
     try:
         url = __get_category_url(category_name)
         response = download(url)
+        HTML_parser = _create_category_parser()
+        parsed_data = HTML_parser.parse(response)
+        print '##### parsed data ######'
+        pr(parsed_data)
     except DownloadFailError:
         #todo: handle DownloadFailError
         pass
@@ -137,3 +143,7 @@ def __to_utc_timstamp(timestamp):
 
 def __now():
     return int(str(time()).split('.')[0])
+
+
+
+companies_for_category('electronics')
