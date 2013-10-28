@@ -8,14 +8,17 @@ from peewee import DoesNotExist
 from time import time
 from util.downloader import download, DownloadFailError
 from parser_factory import _create_category_parser, _create_review_parser
-import pprint.pprint as pr
+from functools import partial
+
 
 TP_BASEURL = 'http://www.trustpilot.dk/'
 REVIEW_BASEURL = "{}review/".format(TP_BASEURL)
 CATEGORY_BASEURL = "{}categories/".format(TP_BASEURL)
+CATEGORY_AJAX_URL = "{}ajaxresults".format(CATEGORY_BASEURL)
 
 CREATED_AT_FORMAT = '%Y-%m-%dT%H:%M:%S'
 NONE = -1
+COMPANIES_PER_PAGE = 20
 
 
 def __get_review_url(company_address, page=None):
@@ -23,8 +26,10 @@ def __get_review_url(company_address, page=None):
                                  1 if page is None else page)
 
 
-def __get_category_url(category):
-    return '{}{}'.format(CATEGORY_BASEURL, category)
+def __get_category_url(category_id, page):
+    return '{}?id={}&page={}'.format(CATEGORY_AJAX_URL,
+                                     category_id,
+                                     page)
 
 
 def reviews_for_company(company):
@@ -41,16 +46,29 @@ def reviews_for_company(company):
 
 
 def companies_for_category(category_name):
-    try:
-        url = __get_category_url(category_name)
-        response = download(url)
-        HTML_parser = _create_category_parser()
-        parsed_data = HTML_parser.parse(response)
-        print '##### parsed data ######'
-        pr(parsed_data)
-    except DownloadFailError:
-        #todo: handle DownloadFailError
-        pass
+    page_count = 1
+    while True:
+        try:
+            #todo: mapping mellem id og category_name?
+            url = __get_category_url('4effa2220000640004000022', page_count)
+            response = download(url)
+            html_parser = _create_category_parser()
+            parsed_data = html_parser.parse(response.read())
+            # If the page is empty the parser returns an empty dict.
+            # This only happens when (no.companies in category) % 20 == 0
+            if len(parsed_data) == 0:
+                break
+            companies = parsed_data.get('companies', {})
+            map(partial(__save_company, category_name=category_name),
+                companies)
+            # If len of categories is less than 20, means we reached
+            # last "page" in the category
+            if len(companies) < COMPANIES_PER_PAGE:
+                break
+            page_count += 1
+        except DownloadFailError:
+            #todo: handle DownloadFailError
+            pass
 
 
 def __save_review(data, company):
@@ -145,7 +163,3 @@ def __to_utc_timstamp(timestamp):
 
 def __now():
     return int(str(time()).split('.')[0])
-
-
-
-companies_for_category('electronics')
