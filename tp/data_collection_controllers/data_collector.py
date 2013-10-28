@@ -24,6 +24,26 @@ def get_category_url(category):
 
 
 def save_review(data, company):
+def reviews_for_company(company):
+    utc_now = __to_utc_timstamp(__now())
+    Company.update(reviews_updated_at=utc_now).where(
+        Company.company == company.company)
+    try:
+        url = "DEFINE THE URL FOR REVIEWS"
+        response = download(url)
+        #todo: update company info and parse review with pagination/ajax
+    except DownloadFailError:
+        #todo: handle DownloadFailError
+        pass
+
+
+def companies_for_category(category_name):
+    try:
+        url = __get_category_url(category_name)
+        response = download(url)
+    except DownloadFailError:
+        #todo: handle DownloadFailError
+        pass
     created_at = data['created_at']
     tp_review_id = data['tp_review_id']
     local_unixtimestamp = datetime.strptime(created_at, CREATED_AT_FORMAT).strftime('%s')
