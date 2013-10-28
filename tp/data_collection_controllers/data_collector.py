@@ -105,7 +105,8 @@ def __save_company(data, category_name):
         # doesn't exists the value is NONE(-1)
         company = Company(domain_name=domain_name,
                           review_count=NONE,
-                          reviews_updated_at=NONE).save()
+                          reviews_updated_at=NONE)
+        company.save()
         company_received = False
 
     if company_received:
@@ -117,7 +118,8 @@ def __save_company(data, category_name):
             company_received = False
     if not company_received:
         company_category = Category(category_name=category_name,
-                                    company=company.company).save()
+                                    company=company.company)
+        company_category.save()
 
     utc_now = __to_utc_timstamp(__now())
     position = data['ranking'].strip().split('.')[0]
