@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from util.html_parser import HTMLParser
+from util.html_parser import HTMLParser2
 
 
 def _create_category_parser():
@@ -34,13 +34,13 @@ def _create_category_parser():
                                     'ignore':False,
                                     'data_target_name':'ranking',
                                     'attribute_target_name':'url',
-                                    'tag_target_name':'links',
+                                    'tag_target_name':'companies',
                                     'subtags':None
                                 }]
                             }]
                         }
                       ]
-    return HTMLParser(parsing_pattern)
+    return HTMLParser2(parsing_pattern)
 
 
 def _create_review_parser():
@@ -156,5 +156,5 @@ def _create_review_parser():
                             }]
                         }
                       ]
-    return HTMLParser(parsing_pattern)
+    return HTMLParser2(parsing_pattern)
 

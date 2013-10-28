@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from HTMLParser import HTMLParser
+from bs4 import UnicodeDammit
 
 ##
 # "Generic" SAX-styled HTML-parser
@@ -20,7 +21,7 @@ from HTMLParser import HTMLParser
 ##
 
 
-class HTMLParser(HTMLParser):
+class HTMLParser2(HTMLParser):
 
     def __init__(self, parsing_pattern):
         HTMLParser.__init__(self)
@@ -34,8 +35,14 @@ class HTMLParser(HTMLParser):
         self.__found_tag = None
 
     # Parse the contents of a file or file-like object
-    def parse(self, file_reference):
-        self.feed(self.unescape(file_reference.read().decode('utf-8')))
+    def parse(self, html_text):
+        self.reset()
+        # Use Beautiful Soup UnicodeDammit
+        decoded_html = UnicodeDammit(html_text, is_html=True)
+        if not decoded_html.unicode_markup:
+            #todo: implement exception for HTMLParser2
+            raise Exception()
+        self.feed(decoded_html.unicode_markup)
         return self.__tag_result
 
     def handle_starttag(self, tag, attrs):
