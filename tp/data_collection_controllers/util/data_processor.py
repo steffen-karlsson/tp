@@ -44,7 +44,7 @@ def __word_process(word):
 
 def __pn_sentiment_score(sentence):
     # Returning the total sum of the sentence based on AFINN scores.
-    return sum([afinn.get(word, 0) for word in sentence])
+    return sum([afinn.get(word, 0) for word in sentence.split()])
 
 
 def review_topic_and_score(review):
