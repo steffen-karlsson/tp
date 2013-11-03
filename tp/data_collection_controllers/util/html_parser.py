@@ -1,30 +1,47 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+.. module:: Generic HTML parser
+    :synopsis: A generic parser, that makes it simpler to parse data while
+                maintaining the advantages of using an event-driven parser
+.. moduleauthor:: Rune Thor Mårtensson <mail@runetm.dk>
+
+"Generic" SAX-styled HTML parser
+Idea is that you can feed the parser some information,
+which makes it aware of what information it is supposed to look for
+as well as how to return the data.
+As this parser only iterates over the HTML once, it "SHOULD" be faster
+than using Beautifulsoup, but this is untested.
+
+v. 0.2.1
+TODO:
+- Verify Sphinx documentation
+- Make sure it works with tags without ends (br, hr and so on)
+- Parser is unable to get javascript data, probably because handle_data
+ can be fired multiple times, and will need to be redone.
+
+"""
 
 from HTMLParser import HTMLParser
 from bs4 import UnicodeDammit
 
-##
-# "Generic" SAX-styled HTML-parser
-# Idea is that you can feed the parser some information, 
-# which makes it aware of what information it is supposed to look for 
-# as well as how to return the data.
-# As this parser only iterates over the HTML once, it "SHOULD" be faster 
-# than using Beautifulsoup, but this is untested.
-#
-#
-# v. 0.2.1
-# By Rune Thor Mårtensson
-# TODO: 
-# - Sphinx documentation
-# - Make sure it works with tags without ends (br, hr and so on)
-# - Parser is unable to get javascript data, probably because handle_data 
-#   can be fired multiple times, and will need to be redone.
-##
 
+class GenericHTMLParser(HTMLParser):
+    """
+        This class extends Pythons HTMLParser, with a framework that lets the
+        user define what the parser is supposed to look for, as well as how to
+        return it.
 
-class HTMLParser2(HTMLParser):
+        All public methods, except for parse, are overwritten from HTMLParser
+
+    """
+
     def __init__(self, parsing_pattern):
+        """ This function initializes the parser
+        :param parsing_pattern: A list that describes how html should be parsed
+        :type parsing_pattern: list
+
+        """
         HTMLParser.__init__(self)
         self.__tag_result = {}
         self.__prev_tag_stack = []
@@ -32,24 +49,32 @@ class HTMLParser2(HTMLParser):
         self.__tag_counter = 0
         self.__next_tags = None
         self.__getdata = False
-        self.__tag_found = False
         self.__found_tag = None
 
 
-    # overwritten function from HTMLParser
-    # function to reset parser, calls super reset and cleans up variables
     def reset(self):
+        """ function to reset parser, calls super reset and cleans up variables
+        .. note::
+            Overwritten method from HTMLParser, should not be called directly
+
+        """
         HTMLParser.reset(self)
         self.__tag_result = {}
         self.__prev_tag_stack = []
         self.__tag_counter = 0
         self.__next_tags = None
         self.__getdata = False
-        self.__tag_found = False
         self.__found_tag = None
 
     # Parse the contents of a file or file-like object
     def parse(self, html_text):
+        """ Parse the provided html_text
+        :param html_text: A string of HTML
+        :type html_text: str
+        :returns: dict -- parsed data
+        :raises: ParseFailError
+
+        """
         # reset parser to original state
         self.reset()
         # Use Beautiful Soup UnicodeDammit to decode to unicode
@@ -64,80 +89,107 @@ class HTMLParser2(HTMLParser):
         return self.__tag_result
 
     def handle_starttag(self, tag, attrs):
+        """ Handle start of a tag.
+        :param tag: Lowercased tag name
+        :type tag: str
+        :param attrs: A list of tuples with attributes in the tag.
+        :type attrs: list
+        :raises: ParseFailError
+        .. note::
+            Overwritten method from HTMLParser, should not be called directly
+
+        """
         # if a subtag has been found in this iteration this var is set to true
         new_tag_found = False
-        # if the tag is the same that we are looking for, 
+        # if the tag is the same that we are looking for,
         # and it has the same attributes, continue
         for current_tag in self.__current_tags:
-            if current_tag['tag'] == tag:
-                # if the tag is the one we are looking for
-                if current_tag['attributes'] in attrs or current_tag['attributes'] is None:
-                    # save old context
-                    self.__prev_tag_stack.append({
-                        'previous_tags': self.__current_tags,
-                        'tag_counter': self.__tag_counter,
-                        'found_tag': self.__found_tag,
-                        'tag_found': self.__tag_found,
-                        'tag_result': self.__tag_result
-                    })
+            # if the tag is the one we are looking for
+            if current_tag['tag'] == tag\
+                and (current_tag['attributes'] in attrs\
+                    or current_tag['attributes'] is None):
+                # save old context
+                self.__prev_tag_stack.append({
+                    'previous_tags': self.__current_tags,
+                    'tag_counter': self.__tag_counter,
+                    'found_tag': self.__found_tag,
+                    'tag_result': self.__tag_result
+                })
 
-                    new_tag_found = True
-                    self.__tag_counter = 1
-                    self.__tag_found = True
-                    self.__found_tag = current_tag
-                    # create a dict to store return data for this tag
-                    self.__tag_result = {}
-                    self.__next_tags = None
+                new_tag_found = True
+                self.__tag_counter = 1
+                self.__found_tag = current_tag
+                # create a dict to store return data for this tag
+                self.__tag_result = {}
+                self.__next_tags = None
 
-                    # set getdata value, so the handle_data function is aware
-                    # that it needs to acquire the data from the tag
-                    if current_tag['data_target_name'] is not None and not current_tag['ignore']:
-                        self.__getdata = True
-                    # acquire information from attributes
-                    if current_tag['attribute_target_name'] is not None and not current_tag['ignore']:
-                        # if we only want to acquire information from one 
-                        # attribute, store without a list
-                        if len(current_tag['returnattributes']) == 1:
+                # set getdata value, so the handle_data function is aware
+                # that it needs to acquire the data from the tag
+                if current_tag['data_target_name'] is not None\
+                    and not current_tag['ignore']:
+                    self.__getdata = True
+                # acquire information from attributes
+                if current_tag['attribute_target_name'] is not None\
+                    and not current_tag['ignore']:
+                    # if we only want to acquire information from one
+                    # attribute, store without a list
+                    if len(current_tag['returnattributes']) == 1:
+                        for attribute in attrs:
+                            # if the attribute key is the same
+                            if attribute[0] == \
+                            current_tag['returnattributes'][0]:
+                                self.__tag_result[current_tag\
+                                ['attribute_target_name']] = attribute[1]
+                    # if we want to return the values
+                    # of more than one attribute
+                    elif len(current_tag['returnattributes']) > 1:
+                        returned_attributes = []
+                        for returnattribute in current_tag['returnattributes']:
                             for attribute in attrs:
-                                # if the attribute key is the same
-                                if attribute[0] == current_tag['returnattributes'][0]:
-                                    self.__tag_result[current_tag['attribute_target_name']] = attribute[1]
-                        # if we want to return the values of more than one attribute
-                        elif len(current_tag['returnattributes']) > 1:
-                            returned_attributes = []
-                            for returnattribute in current_tag['returnattributes']:
-                                for attribute in attrs:
-                                    # if attribute is the same as the return attribute, append its value
-                                    if attribute[0] == returnattribute:
-                                        returned_attributes.append(attribute[1])
-                            # if there is something to return, return it
-                            if len(returned_attributes) > 0:
-                                self.__tag_result[current_tag['attribute_target_name']] = returned_attributes
-                            # if there is no result raise an exception
-                            # since there should alway be in the tag, that 
-                            # is being looked for.
-                            else:
-                                raise ParseFailError('This tag does not have \
-                                    the attribute that is being looked for')
-                        # if we want to return ALL attribute keys and values
+                                # if attribute is the same as the
+                                # return attribute, append its value
+                                if attribute[0] == returnattribute:
+                                    returned_attributes.append(attribute[1])
+                        # if there is something to return, return it
+                        if len(returned_attributes) > 0:
+                            self.__tag_result[current_tag[\
+                            'attribute_target_name']] = returned_attributes
+                        # if there is no result raise an exception
+                        # since there should alway be in the tag, that
+                        # is being looked for.
                         else:
-                            attr_amount = len(attrs)
-                            if attr_amount == 1:
-                                self.__tag_result[current_tag['attribute_target_name']] = attrs[0]
-                            elif attr_amount > 1:
-                                self.__tag_result[current_tag['attribute_target_name']] = attrs
-                            else:
-                                self.__tag_result[current_tag['attribute_target_name']] = None
-                    # If there is subtags, next tags is set to them,
-                    # actual processing is done in the handle_data method.
-                    self.__next_tags = current_tag['subtags']
-                    # As the tag has been found, break for loop
-                    break
+                            raise ParseFailError('This tag does not have \
+                                the attribute that is being looked for')
+                    # if we want to return ALL attribute keys and values
+                    else:
+                        attr_amount = len(attrs)
+                        if attr_amount == 1:
+                            self.__tag_result[current_tag\
+                            ['attribute_target_name']] = attrs[0]
+                        elif attr_amount > 1:
+                            self.__tag_result[current_tag\
+                            ['attribute_target_name']] = attrs
+                        else:
+                            self.__tag_result[current_tag\
+                            ['attribute_target_name']] = None
+                # If there is subtags, next tags is set to them,
+                # actual processing is done in the handle_data method.
+                self.__next_tags = current_tag['subtags']
+                # As the tag has been found, break for loop
+                break
         # tag counter, this helps track when the tag ends
-        if not new_tag_found and self.__found_tag is not None and self.__found_tag['tag'] == tag:
+        if not new_tag_found and self.__found_tag is not None\
+            and self.__found_tag['tag'] == tag:
             self.__tag_counter += 1
 
     def handle_data(self, data):
+        """ Handle data in between a tag
+        :param data: Text that is not classified as HTML
+        :type data: str
+        .. note::
+            Overwritten method from HTMLParser, should not be called directly
+
+        """
         if self.__getdata:
             # add data information to result
             self.__tag_result[self.__found_tag['data_target_name']] = data
@@ -148,11 +200,19 @@ class HTMLParser2(HTMLParser):
             self.__current_tags = self.__next_tags
 
     def handle_endtag(self, tag):
+        """ Handle end of a tag.
+        :param tag: Lowercased tag name
+        :type tag: str
+        .. note::
+            Overwritten method from HTMLParser, should not be called directly
+
+        """
         # if the tag is the one we are looking for, decrement counter
-        if self.__tag_found and tag == self.__found_tag['tag']:
+        if self.__found_tag is not None and tag == self.__found_tag['tag']:
             self.__tag_counter -= 1
             # if the counter is 0, it means the end of the scope of this target
-            # subtag results is added to results, and tag result added to main results
+            # subtag results is added to results,
+            # and tag result added to main results
             if self.__tag_counter == 0:
                 subtag_result = self.__tag_result
                 subtag = self.__found_tag
@@ -166,21 +226,30 @@ class HTMLParser2(HTMLParser):
                         # there will only ever be one subtag_target
                         for subtag_target in subtag_result:
                             try:
-                                self.__tag_result[subtag_target].append(subtag_result[subtag_target])
+                                self.__tag_result[subtag_target].\
+                                append(subtag_result[subtag_target])
                             except KeyError:
                                 self.__tag_result[subtag_target] = []
-                                self.__tag_result[subtag_target].append(subtag_result[subtag_target])
+                                self.__tag_result[subtag_target].\
+                                append(subtag_result[subtag_target])
                     else:
                         self.__tag_result = subtag_result
                 else:
                     self.__add_subtag_data_to_result(subtag_result)
                 # restore context
-                self.__tag_found = prev_tag['tag_found']
                 self.__current_tags = prev_tag['previous_tags']
                 self.__found_tag = prev_tag['found_tag']
                 self.__tag_counter = prev_tag['tag_counter']
 
     def __add_subtag_data_to_result(self, value):
+        """ Adds data from a subtag to the end result
+        :param value: Dict with results from a subtag,
+                        has same structure as the end result
+        :type tag: dict
+        .. note::
+            Overwritten method from HTMLParser, should not be called directly
+
+        """
         tag_target_name = self.__found_tag['tag_target_name']
         # this function relies on found_tag not having been reset to outer tag
         # and tag_result having been set to outer tag
@@ -188,7 +257,7 @@ class HTMLParser2(HTMLParser):
             # if there is only one type of result in tag, ignore tag_target
             if len(value) == 1:
                 for single_result in value:
-                    # change tag_target_name to the key 
+                    # change tag_target_name to the key
                     # of whatever is in the results
                     tag_target_name = single_result
                     # change the value, to be the value of the key
@@ -208,4 +277,8 @@ class HTMLParser2(HTMLParser):
 
 # Simple exception for use in the parser in case something fails.
 class ParseFailError(Exception):
+    """
+        Simple exception class that passes all responsibility to super class.
+
+    """
     pass

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from util.html_parser import HTMLParser2
+from util.html_parser import GenericHTMLParser
 
 
 def _create_category_parser():
@@ -40,12 +40,12 @@ def _create_category_parser():
                             }]
                         }
                       ]
-    return HTMLParser2(parsing_pattern)
+    return GenericHTMLParser(parsing_pattern)
 
 
 def _create_review_parser():
     parsing_pattern = __create_review_parser_pattern()
-    return HTMLParser2(parsing_pattern)
+    return GenericHTMLParser(parsing_pattern)
 
 def _create_review_parser_first():
     parsing_pattern = __create_review_parser_pattern()
@@ -71,7 +71,7 @@ def _create_review_parser_first():
                             'tag_target_name':None,
                             'subtags':None
                         }])
-    return HTMLParser2(parsing_pattern)
+    return GenericHTMLParser(parsing_pattern)
 
 
 def __create_review_parser_pattern():
