@@ -148,16 +148,6 @@ def __save_company(data, category_name):
                      position=position).save()
 
 
-def __update_company(data, company):
-    Company.update(review_count=data['review_count']).where(
-        Company.company == company.company)
-    utc_now = __to_utc_timstamp(__now())
-    Rating(company=company.company,
-           created_at=utc_now,
-           group='tp',
-           value=data['tp_score']).save()
-
-
 def __to_utc_timstamp(timestamp):
     return datetime.utcfromtimestamp(float(timestamp)).strftime('%s')
 
