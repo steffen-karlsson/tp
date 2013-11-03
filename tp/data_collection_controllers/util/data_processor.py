@@ -18,6 +18,7 @@ def __trim_review(review):
     content_word_list = []
     for word in content.split():
         # If word is not none and not in stopwords add
+        word = __word_process(word)
         if word and word not in da_stopwords:
             content_word_list.append(word)
     # Joining word to string again
@@ -27,6 +28,7 @@ def __trim_review(review):
     title_word_list = []
     for word in title.split():
         # If word is not none and not in stopwords add
+        word = __word_process(word)
         if word and word not in da_stopwords:
             title_word_list.append(word)
     # Joining word to string again
