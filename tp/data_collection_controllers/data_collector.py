@@ -50,16 +50,17 @@ def companies_for_category(category_name):
     while True:
         try:
             #todo: mapping mellem id og category_name?
-            url = __get_category_url('4effa2220000640004000022', page_count)
-            response = download(url)
-            html_parser = _create_category_parser()
-            parsed_data = html_parser.parse(response.read())
+            __url = __get_category_url('4effa2220000640004000022', page_count)
+            __response = download(__url)
+            __html_parser = _create_category_parser()
+            __parsed_data = __html_parser.parse(__response.read())
             # If the page is empty the parser returns an empty dict.
             # This only happens when (no.companies in category) % 20 == 0
-            if len(parsed_data) == 0:
+            if len(__parsed_data) == 0:
                 break
-            companies = parsed_data.get('companies', {})
-            map(partial(__save_company, category_name=category_name),
+            companies = __parsed_data.get('companies', {})
+            map(partial(__save_company,
+                        category_name=category_name),
                 companies)
             # If len of categories is less than 20, means we reached
             # last "page" in the category
