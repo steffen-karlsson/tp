@@ -7,17 +7,19 @@ from bs4 import UnicodeDammit
 ##
 # "Generic" SAX-styled HTML-parser
 # Idea is that you can feed the parser some information, 
-# which makes it aware of what information it is supposed to look for as well as to what to return it as.
-# As this parser only iterates over the HTML once, it "SHOULD" be faster than using Beautifulsoup, but this is untested.
+# which makes it aware of what information it is supposed to look for 
+# as well as how to return the data.
+# As this parser only iterates over the HTML once, it "SHOULD" be faster 
+# than using Beautifulsoup, but this is untested.
 #
 #
-# v. 0.2.0
+# v. 0.2.1
 # By Rune Thor Mårtensson
 # TODO: 
 # - Sphinx documentation
 # - Make sure it works with tags without ends (br, hr and so on)
-# - Improve performance
-# - Implement a proper exception
+# - Parser is unable to get javascript data, probably because handle_data 
+#   can be fired multiple times, and will need to be redone.
 ##
 
 
@@ -33,15 +35,32 @@ class HTMLParser2(HTMLParser):
         self.__tag_found = False
         self.__found_tag = None
 
+
+    # overwritten function from HTMLParser
+    # function to reset parser, calls super reset and cleans up variables
+    def reset(self):
+        HTMLParser.reset(self)
+        self.__tag_result = {}
+        self.__prev_tag_stack = []
+        self.__tag_counter = 0
+        self.__next_tags = None
+        self.__getdata = False
+        self.__tag_found = False
+        self.__found_tag = None
+
     # Parse the contents of a file or file-like object
     def parse(self, html_text):
+        # reset parser to original state
         self.reset()
-        # Use Beautiful Soup UnicodeDammit
+        # Use Beautiful Soup UnicodeDammit to decode to unicode
         decoded_html = UnicodeDammit(html_text, is_html=True)
+        # If unicodedammit was unable to convert to unicode, raise exception
         if not decoded_html.unicode_markup:
-            #todo: implement exception for HTMLParser2
-            raise Exception()
-        self.feed(decoded_html.unicode_markup)
+            raise ParseFailError('Unable to convert HTML to unicode')
+        # convert HTML escape characters to the unicode representation
+        unescaped_html = self.unescape(decoded_html.unicode_markup)
+        # Feed parser
+        self.feed(unescaped_html)
         return self.__tag_result
 
     def handle_starttag(self, tag, attrs):
@@ -74,7 +93,7 @@ class HTMLParser2(HTMLParser):
                     # that it needs to acquire the data from the tag
                     if current_tag['data_target_name'] is not None and not current_tag['ignore']:
                         self.__getdata = True
-                        # acquire information from attributes
+                    # acquire information from attributes
                     if current_tag['attribute_target_name'] is not None and not current_tag['ignore']:
                         # if we only want to acquire information from one 
                         # attribute, store without a list
@@ -91,11 +110,15 @@ class HTMLParser2(HTMLParser):
                                     # if attribute is the same as the return attribute, append its value
                                     if attribute[0] == returnattribute:
                                         returned_attributes.append(attribute[1])
-                                # if there is something to return, return it
+                            # if there is something to return, return it
                             if len(returned_attributes) > 0:
                                 self.__tag_result[current_tag['attribute_target_name']] = returned_attributes
+                            # if there is no result raise an exception
+                            # since there should alway be in the tag, that 
+                            # is being looked for.
                             else:
-                                raise Exception('This tag does not have the one that is being looked for')
+                                raise ParseFailError('This tag does not have \
+                                    the attribute that is being looked for')
                         # if we want to return ALL attribute keys and values
                         else:
                             attr_amount = len(attrs)
@@ -105,10 +128,11 @@ class HTMLParser2(HTMLParser):
                                 self.__tag_result[current_tag['attribute_target_name']] = attrs
                             else:
                                 self.__tag_result[current_tag['attribute_target_name']] = None
-                        # If there is subtags, next tags is set to them,
+                    # If there is subtags, next tags is set to them,
                     # actual processing is done in the handle_data method.
                     self.__next_tags = current_tag['subtags']
-            # if the tag is the same as the one that was found, increment
+                    # As the tag has been found, break for loop
+                    break
         # tag counter, this helps track when the tag ends
         if not new_tag_found and self.__found_tag is not None and self.__found_tag['tag'] == tag:
             self.__tag_counter += 1
@@ -150,7 +174,7 @@ class HTMLParser2(HTMLParser):
                         self.__tag_result = subtag_result
                 else:
                     self.__add_subtag_data_to_result(subtag_result)
-                    # restore context
+                # restore context
                 self.__tag_found = prev_tag['tag_found']
                 self.__current_tags = prev_tag['previous_tags']
                 self.__found_tag = prev_tag['found_tag']
@@ -180,3 +204,8 @@ class HTMLParser2(HTMLParser):
                     self.__tag_result[single_result] = value[single_result]
             else:
                 self.__tag_result[tag_target_name] = value
+
+
+# Simple exception for use in the parser in case something fails.
+class ParseFailError(Exception):
+    pass
