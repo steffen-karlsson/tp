@@ -47,12 +47,12 @@ def reviews_for_company(company):
 
 def companies_for_category(category_name):
     page_count = 1
+    __html_parser = _create_category_parser()
     while True:
         try:
             #todo: mapping mellem id og category_name?
             __url = __get_category_url('4effa2220000640004000022', page_count)
             __response = download(__url)
-            __html_parser = _create_category_parser()
             __parsed_data = __html_parser.parse(__response.read())
             # If the page is empty the parser returns an empty dict.
             # This only happens when (no.companies in category) % 20 == 0
