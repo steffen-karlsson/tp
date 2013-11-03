@@ -22,7 +22,6 @@ from bs4 import UnicodeDammit
 
 
 class HTMLParser2(HTMLParser):
-
     def __init__(self, parsing_pattern):
         HTMLParser.__init__(self)
         self.__tag_result = {}
@@ -56,10 +55,10 @@ class HTMLParser2(HTMLParser):
                 if current_tag['attributes'] in attrs or current_tag['attributes'] is None:
                     # save old context
                     self.__prev_tag_stack.append({
-                        'previous_tags' : self.__current_tags, 
-                        'tag_counter' : self.__tag_counter, 
-                        'found_tag' : self.__found_tag,
-                        'tag_found' : self.__tag_found,
+                        'previous_tags': self.__current_tags,
+                        'tag_counter': self.__tag_counter,
+                        'found_tag': self.__found_tag,
+                        'tag_found': self.__tag_found,
                         'tag_result': self.__tag_result
                     })
 
@@ -68,15 +67,15 @@ class HTMLParser2(HTMLParser):
                     self.__tag_found = True
                     self.__found_tag = current_tag
                     # create a dict to store return data for this tag
-                    self.__tag_result = {}                    
+                    self.__tag_result = {}
                     self.__next_tags = None
 
                     # set getdata value, so the handle_data function is aware
                     # that it needs to acquire the data from the tag
-                    if current_tag['data_target_name'] is not None and current_tag['ignore'] == False:
+                    if current_tag['data_target_name'] is not None and not current_tag['ignore']:
                         self.__getdata = True
-                    # acquire information from attributes
-                    if current_tag['attribute_target_name'] is not None and current_tag['ignore'] == False:
+                        # acquire information from attributes
+                    if current_tag['attribute_target_name'] is not None and not current_tag['ignore']:
                         # if we only want to acquire information from one 
                         # attribute, store without a list
                         if len(current_tag['returnattributes']) == 1:
@@ -92,7 +91,7 @@ class HTMLParser2(HTMLParser):
                                     # if attribute is the same as the return attribute, append its value
                                     if attribute[0] == returnattribute:
                                         returned_attributes.append(attribute[1])
-                            # if there is something to return, return it
+                                # if there is something to return, return it
                             if len(returned_attributes) > 0:
                                 self.__tag_result[current_tag['attribute_target_name']] = returned_attributes
                             else:
@@ -106,10 +105,10 @@ class HTMLParser2(HTMLParser):
                                 self.__tag_result[current_tag['attribute_target_name']] = attrs
                             else:
                                 self.__tag_result[current_tag['attribute_target_name']] = None
-                    # If there is subtags, next tags is set to them, 
+                        # If there is subtags, next tags is set to them,
                     # actual processing is done in the handle_data method.
                     self.__next_tags = current_tag['subtags']
-        # if the tag is the same as the one that was found, increment 
+            # if the tag is the same as the one that was found, increment
         # tag counter, this helps track when the tag ends
         if not new_tag_found and self.__found_tag is not None and self.__found_tag['tag'] == tag:
             self.__tag_counter += 1
@@ -130,7 +129,7 @@ class HTMLParser2(HTMLParser):
             self.__tag_counter -= 1
             # if the counter is 0, it means the end of the scope of this target
             # subtag results is added to results, and tag result added to main results
-            if self.__tag_counter == 0:      
+            if self.__tag_counter == 0:
                 subtag_result = self.__tag_result
                 subtag = self.__found_tag
                 # get the old context
@@ -138,7 +137,7 @@ class HTMLParser2(HTMLParser):
                 # restore the results from the outer tag
                 self.__tag_result = prev_tag['tag_result']
                 # add the result of the sub tag to the outer tag
-                if subtag['ignore'] == True:
+                if subtag['ignore']:
                     if subtag['multiple_tags']:
                         # there will only ever be one subtag_target
                         for subtag_target in subtag_result:
@@ -151,13 +150,13 @@ class HTMLParser2(HTMLParser):
                         self.__tag_result = subtag_result
                 else:
                     self.__add_subtag_data_to_result(subtag_result)
-                # restore context
+                    # restore context
                 self.__tag_found = prev_tag['tag_found']
                 self.__current_tags = prev_tag['previous_tags']
                 self.__found_tag = prev_tag['found_tag']
                 self.__tag_counter = prev_tag['tag_counter']
 
-    def __add_subtag_data_to_result(self,value):
+    def __add_subtag_data_to_result(self, value):
         tag_target_name = self.__found_tag['tag_target_name']
         # this function relies on found_tag not having been reset to outer tag
         # and tag_result having been set to outer tag
