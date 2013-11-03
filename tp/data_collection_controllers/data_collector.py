@@ -8,6 +8,7 @@ from peewee import DoesNotExist
 from time import time
 from util.downloader import download, DownloadFailError
 from parser_factory import _create_category_parser, _create_review_parser
+from parser_factory import _create_review_parser_first
 from functools import partial
 
 
@@ -34,15 +35,59 @@ def __get_category_url(category_id, page):
 
 def reviews_for_company(company):
     utc_now = __to_utc_timstamp(__now())
+    update_time = company.reviews_updated_at
     Company.update(reviews_updated_at=utc_now).where(
-        Company.company == company.company)
-    try:
-        url = "DEFINE THE URL FOR REVIEWS"
-        response = download(url)
-        #todo: update company info and parse review with pagination/ajax
-    except DownloadFailError:
-        #todo: handle DownloadFailError
-        pass
+        Company.company == company.company).execute()
+
+    review_count = float('inf')
+    page_count = 1
+    __html_parser = _create_review_parser()
+    # Looping until the review count is 0. Decreasing by number of review
+    # At the page pr round.
+    while review_count >= 0:
+        try:
+            __url = __get_review_url(company.domain_name,
+                                     page=page_count)
+            __response = download(__url)
+            # If its the first page, the use the custom parser,
+            # which is paring the review count and the tp score,
+            # other than than the reviews too.
+            if page_count == 1:
+                __html_parser_first = _create_review_parser_first()
+                __parsed_data = __html_parser_first.parse(__response.read())
+                review_count = int(__parsed_data.get('review_count', 0))
+                tp_score = float(__parsed_data.get('top_score', 0))
+
+                # Updating the company with the review count
+                Company.update(review_count=review_count).where(
+                    Company.company == company.company).execute()
+                # Creating a new Rating object related to the company
+                # with the tp_score.
+                Rating(company=company.company,
+                       created_at=utc_now,
+                       group='tp',
+                       value=tp_score).save()
+            else:
+                __parsed_data = __html_parser.parse(__response.read())
+
+            reviews = __parsed_data.get('reviews', None)
+            # Safety check if there is any reviews
+            if reviews:
+                for review in reviews:
+                    if __save_review(review, company, update_time):
+                        # If save review return true, means that
+                        # the review count should be decreased
+                        review_count -= 1
+                    else:
+                        # False means that we have the rest of the reviews
+                        return
+                page_count += 1
+            else:
+                # No more reviews
+                return
+        except DownloadFailError:
+            #todo: handle DownloadFailError
+            pass
 
 
 def companies_for_category(category_name):
@@ -72,18 +117,18 @@ def companies_for_category(category_name):
             pass
 
 
-def __save_review(data, company):
+def __save_review(data, company, update_time):
     created_at = data['created_at']
     tp_review_id = data['tp_review_id']
     local_unixtimestamp = datetime.strptime(
         created_at, CREATED_AT_FORMAT).strftime('%s')
     created_at = __to_utc_timstamp(local_unixtimestamp)
 
-    if created_at < company.reviews_updated_at:
-        return
+    if created_at < update_time:
+        return False
     try:
         Review.get(Review.review == tp_review_id)
-        return
+        return False
     except DoesNotExist:
         user = __save_user(data['user'])
         Review(company=company.company,
@@ -93,6 +138,7 @@ def __save_review(data, company):
                title=data['title'],
                tp_review=tp_review_id,
                user=user.user).save()
+        return True
 
 
 def __save_user(data):
