@@ -44,8 +44,12 @@ def _create_category_parser():
 
 
 def _create_review_parser():
-    parsing_pattern = [
-                        {
+    parsing_pattern = __create_review_parser_pattern()
+    return HTMLParser2(parsing_pattern)
+
+def _create_review_parser_first():
+    parsing_pattern = __create_review_parser_pattern()
+    parsing_pattern.extend([{
                             'tag':'meta',
                             'attributes':('itemprop', 'reviewCount'),
                             'multiple_tags':False,
@@ -66,7 +70,12 @@ def _create_review_parser():
                             'attribute_target_name':None,
                             'tag_target_name':None,
                             'subtags':None
-                        },
+                        }])
+    return HTMLParser2(parsing_pattern)
+
+
+def __create_review_parser_pattern():
+    parsing_pattern = [
                         {
                             'tag':'div',
                             'attributes':('itemprop', 'review'),
@@ -111,17 +120,6 @@ def _create_review_parser():
                                 }]
                             },
                             {
-                                'tag':'time',
-                                'attributes':None,
-                                'multiple_tags':False,
-                                'returnattributes':['datetime'],
-                                'ignore':False,
-                                'data_target_name':None,
-                                'attribute_target_name':'created_at',
-                                'tag_target_name':None,
-                                'subtags': None
-                            },
-                            {
                                 'tag':'meta',
                                 'attributes':('itemprop', 'ratingValue'),
                                 'multiple_tags':False,
@@ -129,6 +127,17 @@ def _create_review_parser():
                                 'ignore':False,
                                 'data_target_name':None,
                                 'attribute_target_name':'rating',
+                                'tag_target_name':None,
+                                'subtags': None
+                            },
+                            {
+                                'tag':'time',
+                                'attributes':None,
+                                'multiple_tags':False,
+                                'returnattributes':['datetime'],
+                                'ignore':False,
+                                'data_target_name':None,
+                                'attribute_target_name':'created_at',
                                 'tag_target_name':None,
                                 'subtags': None
                             },
@@ -156,5 +165,4 @@ def _create_review_parser():
                             }]
                         }
                       ]
-    return HTMLParser2(parsing_pattern)
-
+    return parsing_pattern
