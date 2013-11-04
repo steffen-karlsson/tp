@@ -36,7 +36,7 @@ class Company(BaseModel):
         db_table = 'company'
 
 
-class Company_Category(BaseModel):
+class CompanyCategory(BaseModel):
     category = ForeignKeyField(db_column='category_id', rel_model=Category)
     company_category = PrimaryKeyField(db_column='company_category_id')
     company = ForeignKeyField(db_column='company_id', rel_model=Company)
@@ -45,8 +45,9 @@ class Company_Category(BaseModel):
         db_table = 'company_category'
 
 
-class Category_Position(BaseModel):
-    company_category = ForeignKeyField(db_column='company_category_id', rel_model=Company_Category)
+class CategoryPosition(BaseModel):
+    company_category = ForeignKeyField(db_column='company_category_id',
+                                       rel_model=CompanyCategory)
     created_at = IntegerField()
     group = CharField()
     position = IntegerField()
@@ -78,7 +79,7 @@ class Review(BaseModel):
         db_table = 'review'
 
 
-class Computed_Review_Rating(BaseModel):
+class ComputedReviewRating(BaseModel):
     delivery_value = FloatField(null=True)
     price_value = FloatField(null=True)
     review = ForeignKeyField(db_column='review_id', rel_model=Review)
@@ -98,6 +99,7 @@ class Job(BaseModel):
 
     class Meta:
         db_table = 'job'
+
 
 
 class Rating(BaseModel):
