@@ -38,11 +38,11 @@ def process_jobs():
 
 def __execute_job(job):
     _type = job.type
-    if _type is TYPE_CATEGORY:
+    if _type == TYPE_CATEGORY:
         category_id = job.target
         category = Category.get(Category.category == category_id)
         companies_for_category(category)
-    elif _type is TYPE_COMPANY:
+    elif _type == TYPE_COMPANY:
         company_id = job.target
         company = Company.get(Company.company == company_id)
         reviews_for_company(company)
