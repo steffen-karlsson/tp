@@ -3,8 +3,8 @@
 
 from peewee import *
 
+database = MySQLDatabase('tp', **{'user': 'root'})
 #database = MySQLDatabase('tp', **{'passwd': 'SKAjdlkwq3nsjd3if993', 'user': 'tp'})
-database = MySQLDatabase('tp', **{'passwd': '', 'user': 'root'})
 
 
 class UnknownFieldType(object):
@@ -14,6 +14,16 @@ class UnknownFieldType(object):
 class BaseModel(Model):
     class Meta:
         database = database
+
+
+class Category(BaseModel):
+    category = PrimaryKeyField(db_column='category_id')
+    name = CharField()
+    tp_category = CharField(db_column='tp_category_id')
+    url = CharField()
+
+    class Meta:
+        db_table = 'category'
 
 
 class Company(BaseModel):
@@ -26,17 +36,17 @@ class Company(BaseModel):
         db_table = 'company'
 
 
-class Category(BaseModel):
-    category = PrimaryKeyField(db_column='category_id')
-    category_name = CharField()
+class Company_Category(BaseModel):
+    category = ForeignKeyField(db_column='category_id', rel_model=Category)
+    company_category = PrimaryKeyField(db_column='company_category_id')
     company = ForeignKeyField(db_column='company_id', rel_model=Company)
 
     class Meta:
-        db_table = 'category'
+        db_table = 'company_category'
 
 
-class CategoryPosition(BaseModel):
-    category = ForeignKeyField(db_column='category_id', rel_model=Category)
+class Category_Position(BaseModel):
+    company_category = ForeignKeyField(db_column='company_category_id', rel_model=Company_Category)
     created_at = IntegerField()
     group = CharField()
     position = IntegerField()
@@ -68,7 +78,7 @@ class Review(BaseModel):
         db_table = 'review'
 
 
-class ComputedReviewRating(BaseModel):
+class Computed_Review_Rating(BaseModel):
     delivery_value = FloatField(null=True)
     price_value = FloatField(null=True)
     review = ForeignKeyField(db_column='review_id', rel_model=Review)
@@ -77,6 +87,17 @@ class ComputedReviewRating(BaseModel):
 
     class Meta:
         db_table = 'computed_review_rating'
+
+
+class Job(BaseModel):
+    job = IntegerField(db_column='job_id')
+    start_time = IntegerField()
+    status = CharField()
+    target = IntegerField()
+    type = CharField()
+
+    class Meta:
+        db_table = 'job'
 
 
 class Rating(BaseModel):
