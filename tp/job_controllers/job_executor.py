@@ -7,6 +7,7 @@ from tp.data_collection_controllers.data_collector import companies_for_category
 from tp.job_controllers import *
 from peewee import DoesNotExist
 
+
 class JobTypeNotFoundException(Exception):
     pass
 
@@ -14,8 +15,8 @@ class JobTypeNotFoundException(Exception):
 def process_jobs():
     utc_now = to_utc_timstamp(now())
     try:
-        jobs = Job.select((Job.start_time <= utc_now)
-                          & (Job.status == IN_QUEUE)).order_by(Job.start_time.asc())
+        jobs = Job.select().where((Job.start_time <= utc_now)
+                                  & (Job.status == IN_QUEUE)).order_by(Job.start_time.asc())
     except DoesNotExist:
         return
     job_count = jobs.count()
