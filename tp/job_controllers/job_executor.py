@@ -14,12 +14,12 @@ class JobTypeNotFoundException(Exception):
 def process_jobs():
     utc_now = to_utc_timstamp(now())
     try:
-        jobs = Job.get((Job.start_time <= utc_now)
-                       & (Job.status == IN_QUEUE)).order_by(Job.start_time.asc())
+        jobs = Job.select((Job.start_time <= utc_now)
+                          & (Job.status == IN_QUEUE)).order_by(Job.start_time.asc())
     except DoesNotExist:
         return
     job_count = jobs.count()
-    if job_count < 0:
+    if job_count == 0:
         return
     if job_count > 1:
         #todo: something went wrong! Only one job at a time
