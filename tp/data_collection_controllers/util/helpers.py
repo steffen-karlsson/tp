@@ -6,7 +6,7 @@ from time import time
 
 
 def to_utc_timstamp(timestamp):
-    return datetime.utcfromtimestamp(float(timestamp)).strftime('%s')
+    return float(datetime.utcfromtimestamp(float(timestamp)).strftime('%s'))
 
 
 def now():

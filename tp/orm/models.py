@@ -91,7 +91,7 @@ class ComputedReviewRating(BaseModel):
 
 
 class Job(BaseModel):
-    job = IntegerField(db_column='job_id')
+    job = IntegerField(db_column='job_id', primary_key=True)
     start_time = IntegerField()
     status = CharField()
     target = IntegerField()
@@ -99,7 +99,6 @@ class Job(BaseModel):
 
     class Meta:
         db_table = 'job'
-
 
 
 class Rating(BaseModel):

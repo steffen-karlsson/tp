@@ -4,13 +4,7 @@
 from tp.orm.models import Job, Category, Company
 from tp.data_collection_controllers.util.helpers import to_utc_timstamp, now
 from tp.data_collection_controllers.data_collector import companies_for_category, reviews_for_company
-
-IN_QUEUE = 'in-queue'
-EXECUTING = 'executing'
-TERMINATED = 'terminated'
-
-TYPE_CATEGORY = 'category'
-TYPE_COMPANY = 'company'
+from tp.job_controllers import *
 
 
 class JobTypeNotFoundException(Exception):
@@ -22,7 +16,7 @@ def process_jobs():
     jobs = Job.get((Job.start_time <= utc_now)
                    & (Job.status == IN_QUEUE)).order_by(Job.start_time.asc())
 
-    job_count = len(jobs)
+    job_count = jobs.count()
     if job_count < 0:
         return
     if job_count > 1:
