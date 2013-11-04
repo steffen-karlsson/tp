@@ -179,7 +179,7 @@ def __save_company(data, category):
         except DoesNotExist:
             company_received = False
     if not company_received:
-        company_category = CompanyCategory(category_name=category.name,
+        company_category = CompanyCategory(category=category.category,
                                            company=company.company)
         company_category.save()
 
