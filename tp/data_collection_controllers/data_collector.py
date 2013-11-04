@@ -185,7 +185,7 @@ def __save_company(data, category):
 
     utc_now = to_utc_timstamp(now())
     position = data['ranking'].strip().split('.')[0]
-    CategoryPosition(category=company_category.category,
+    CategoryPosition(category=company_category.company_category,
                      created_at=utc_now,
                      group='tp',
                      position=position).save()
