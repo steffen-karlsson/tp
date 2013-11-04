@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from tp.orm.models import Job, Category, Company
-from util.helpers import to_utc_timstamp, now
-from data_collector import companies_for_category, reviews_for_company
+from tp.data_collection_controllers.util.helpers import to_utc_timstamp, now
+from tp.data_collection_controllers.data_collector import companies_for_category, reviews_for_company
 
 IN_QUEUE = 'in-queue'
 EXECUTING = 'executing'
