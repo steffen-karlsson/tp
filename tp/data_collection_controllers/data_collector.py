@@ -94,7 +94,7 @@ def companies_for_category(category):
     __html_parser = _create_category_parser()
     while True:
         try:
-            __url = __get_category_url(category.category, page_count)
+            __url = __get_category_url(category.tp_category, page_count)
             __response = download(__url)
             __parsed_data = __html_parser.parse(__response.read())
             # If the page is empty the parser returns an empty dict.
