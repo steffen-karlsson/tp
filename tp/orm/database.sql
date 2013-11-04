@@ -66,14 +66,35 @@ DROP TABLE IF EXISTS `tp`.`category` ;
 
 CREATE TABLE IF NOT EXISTS `tp`.`category` (
   `category_id` INT NOT NULL AUTO_INCREMENT,
-  `category_name` VARCHAR(45) NOT NULL,
-  `company_id` INT NOT NULL,
+  `tp_category_id` VARCHAR(255) NOT NULL,
+  `url` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`category_id`),
+  UNIQUE INDEX `tp_category_id_UNIQUE` (`tp_category_id` ASC))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `tp`.`company_category`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `tp`.`company_category` ;
+
+CREATE TABLE IF NOT EXISTS `tp`.`company_category` (
+  `company_category_id` INT NOT NULL AUTO_INCREMENT,
+  `company_id` INT NOT NULL,
+  `category_id` INT NOT NULL,
+  PRIMARY KEY (`company_category_id`, `category_id`),
   INDEX `fk_category_company1_idx` (`company_id` ASC),
+  INDEX `fk_company_category_category1_idx` (`category_id` ASC),
   CONSTRAINT `fk_category_company1`
     FOREIGN KEY (`company_id`)
     REFERENCES `tp`.`company` (`company_id`)
     ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_company_category_category1`
+    FOREIGN KEY (`category_id`)
+    REFERENCES `tp`.`category` (`category_id`)
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -84,14 +105,14 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `tp`.`category_position` ;
 
 CREATE TABLE IF NOT EXISTS `tp`.`category_position` (
-  `category_id` INT NOT NULL,
+  `company_category_id` INT NOT NULL,
   `created_at` INT NOT NULL,
   `position` INT NOT NULL,
   `group` ENUM('tp','average', 'rma', 'price', 'delivery') NOT NULL,
-  PRIMARY KEY (`category_id`, `created_at`),
+  PRIMARY KEY (`company_category_id`, `created_at`),
   CONSTRAINT `fk_category_position_category1`
-    FOREIGN KEY (`category_id`)
-    REFERENCES `tp`.`category` (`category_id`)
+    FOREIGN KEY (`company_category_id`)
+    REFERENCES `tp`.`company_category` (`company_category_id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -133,4 +154,19 @@ CREATE TABLE IF NOT EXISTS `tp`.`computed_review_rating` (
     REFERENCES `tp`.`review` (`review_id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `tp`.`job`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `tp`.`job` ;
+
+CREATE TABLE IF NOT EXISTS `tp`.`job` (
+  `job_id` INT NOT NULL AUTO_INCREMENT,
+  `status` VARCHAR(45) NOT NULL,
+  `start_time` INT NOT NULL,
+  `target` INT NOT NULL,
+  `type` ENUM('category', 'company') NOT NULL,
+  PRIMARY KEY (`job_id`))
 ENGINE = InnoDB;
