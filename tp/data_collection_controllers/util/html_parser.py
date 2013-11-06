@@ -15,7 +15,7 @@ than using Beautifulsoup, but this is untested.
 
 v. 0.2.1
 Features that need verification after changes to code
-- Verify Sphinx documentation
+- Verify Sphinx documentation works
 - Make sure it works with tags without ends (br, hr and so on)
 - Parser is unable to get javascript data, probably because handle_data
  can be fired multiple times, and will need to be redone.
@@ -104,7 +104,7 @@ class GenericHTMLParser(HTMLParser):
         for current_tag in self.__current_tags:
             # if the tag is the one we are looking for
             if current_tag['tag'] == tag\
-                and (current_tag.get('attributes', None) in attrs\
+                    and (current_tag.get('attributes', None) in attrs\
                     or current_tag.get('attributes', None) is None):
                 # save old context
                 self.__prev_tag_stack.append({
@@ -214,6 +214,7 @@ class GenericHTMLParser(HTMLParser):
         :type pattern_tag: dict
         :param parsed_tag_attributes: list of tuples with attributes and values
         :type parsed_tag_attributes: list
+        :raises: ParseFailError
         """
         # if we only want to acquire information from one
         # attribute, store without a list
