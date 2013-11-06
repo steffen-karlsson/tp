@@ -18,7 +18,7 @@ def _create_category_parser():
                                 'subtags':
                                 [{
                                     'tag':'a',
-                                    'returnattributes':['href'],
+                                    'return_attributes':['href'],
                                     'data_target_name':'ranking',
                                     'attribute_target_name':'url',
                                     'tag_target_name':'companies',
@@ -38,7 +38,7 @@ def _create_review_parser_first():
     parsing_pattern.extend([{
                             'tag':'meta',
                             'attributes':('itemprop', 'reviewCount'),
-                            'returnattributes':['content'],
+                            'return_attributes':['content'],
                             'attribute_target_name':'review_count',
                             'tag_target_name':'review_count',
                         },
@@ -56,7 +56,7 @@ def __create_review_parser_pattern():
                             'tag':'div',
                             'attributes':('itemprop', 'review'),
                             'multiple_tags':True,
-                            'returnattributes':['data-reviewid'],
+                            'return_attributes':['data-reviewid'],
                             'attribute_target_name':'tp_review_id',
                             'tag_target_name':'reviews',
                             'subtags':
@@ -81,12 +81,12 @@ def __create_review_parser_pattern():
                             {
                                 'tag':'meta',
                                 'attributes':('itemprop', 'ratingValue'),
-                                'returnattributes':['content'],
+                                'return_attributes':['content'],
                                 'attribute_target_name':'rating',
                             },
                             {
                                 'tag':'time',
-                                'returnattributes':['datetime'],
+                                'return_attributes':['datetime'],
                                 'attribute_target_name':'created_at',
                             },
                             {
