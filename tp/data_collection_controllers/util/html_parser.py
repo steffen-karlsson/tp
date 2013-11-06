@@ -14,12 +14,11 @@ As this parser only iterates over the HTML once, it "SHOULD" be faster
 than using Beautifulsoup, but this is untested.
 
 v. 0.2.1
-TODO:
+Features that need verification after changes to code
 - Verify Sphinx documentation
 - Make sure it works with tags without ends (br, hr and so on)
 - Parser is unable to get javascript data, probably because handle_data
  can be fired multiple times, and will need to be redone.
-
 """
 
 from HTMLParser import HTMLParser
@@ -33,36 +32,30 @@ class GenericHTMLParser(HTMLParser):
         return it.
 
         All public methods, except for parse, are overwritten from HTMLParser
-
     """
 
     def __init__(self, parsing_pattern):
         """ This function initializes the parser
         :param parsing_pattern: A list that describes how html should be parsed
         :type parsing_pattern: list
-
         """
         HTMLParser.__init__(self)
         self.__tag_result = {}
         self.__prev_tag_stack = []
         self.__current_tags = parsing_pattern
         self.__tag_counter = 0
-        self.__next_tags = None
         self.__getdata = False
         self.__found_tag = None
-
 
     def reset(self):
         """ function to reset parser, calls super reset and cleans up variables
         .. note::
             Overwritten method from HTMLParser, should not be called directly
-
         """
         HTMLParser.reset(self)
         self.__tag_result = {}
         self.__prev_tag_stack = []
         self.__tag_counter = 0
-        self.__next_tags = None
         self.__getdata = False
         self.__found_tag = None
 
@@ -73,7 +66,6 @@ class GenericHTMLParser(HTMLParser):
         :type html_text: str
         :returns: dict -- parsed data
         :raises: ParseFailError
-
         """
         # reset parser to original state
         self.reset()
@@ -82,10 +74,8 @@ class GenericHTMLParser(HTMLParser):
         # If unicodedammit was unable to convert to unicode, raise exception
         if not decoded_html.unicode_markup:
             raise ParseFailError('Unable to convert HTML to unicode')
-        # convert HTML escape characters to the unicode representation
-        unescaped_html = self.unescape(decoded_html.unicode_markup)
         # Feed parser
-        self.feed(unescaped_html)
+        self.feed(decoded_html.unicode_markup)
         return self.__tag_result
 
     def handle_starttag(self, tag, attrs):
@@ -97,8 +87,16 @@ class GenericHTMLParser(HTMLParser):
         :raises: ParseFailError
         .. note::
             Overwritten method from HTMLParser, should not be called directly
-
         """
+        # if tag is a break tag call add_to_data function,
+        # which adds <br>, if we are looking for data and is in same tag
+        if self.__found_tag is not None\
+            and self.__found_tag.get('keep_break_tags', False)\
+            and tag == 'br':
+            self.__add_to_data('<br>')
+        # if we are not looking for tags, return immediately
+        if self.__current_tags is None:
+            return
         # if a subtag has been found in this iteration this var is set to true
         new_tag_found = False
         # if the tag is the same that we are looking for,
@@ -106,14 +104,15 @@ class GenericHTMLParser(HTMLParser):
         for current_tag in self.__current_tags:
             # if the tag is the one we are looking for
             if current_tag['tag'] == tag\
-                and (current_tag['attributes'] in attrs\
-                    or current_tag['attributes'] is None):
+                and (current_tag.get('attributes', None) in attrs\
+                    or current_tag.get('attributes', None) is None):
                 # save old context
                 self.__prev_tag_stack.append({
                     'previous_tags': self.__current_tags,
                     'tag_counter': self.__tag_counter,
                     'found_tag': self.__found_tag,
-                    'tag_result': self.__tag_result
+                    'tag_result': self.__tag_result,
+                    'get_data': self.__getdata
                 })
 
                 new_tag_found = True
@@ -121,60 +120,19 @@ class GenericHTMLParser(HTMLParser):
                 self.__found_tag = current_tag
                 # create a dict to store return data for this tag
                 self.__tag_result = {}
-                self.__next_tags = None
 
                 # set getdata value, so the handle_data function is aware
                 # that it needs to acquire the data from the tag
-                if current_tag['data_target_name'] is not None\
-                    and not current_tag['ignore']:
+                if current_tag.get('data_target_name', None) is not None:
                     self.__getdata = True
                 # acquire information from attributes
-                if current_tag['attribute_target_name'] is not None\
-                    and not current_tag['ignore']:
-                    # if we only want to acquire information from one
-                    # attribute, store without a list
-                    if len(current_tag['returnattributes']) == 1:
-                        for attribute in attrs:
-                            # if the attribute key is the same
-                            if attribute[0] == \
-                            current_tag['returnattributes'][0]:
-                                self.__tag_result[current_tag\
-                                ['attribute_target_name']] = attribute[1]
-                    # if we want to return the values
-                    # of more than one attribute
-                    elif len(current_tag['returnattributes']) > 1:
-                        returned_attributes = []
-                        for returnattribute in current_tag['returnattributes']:
-                            for attribute in attrs:
-                                # if attribute is the same as the
-                                # return attribute, append its value
-                                if attribute[0] == returnattribute:
-                                    returned_attributes.append(attribute[1])
-                        # if there is something to return, return it
-                        if len(returned_attributes) > 0:
-                            self.__tag_result[current_tag[\
-                            'attribute_target_name']] = returned_attributes
-                        # if there is no result raise an exception
-                        # since there should alway be in the tag, that
-                        # is being looked for.
-                        else:
-                            raise ParseFailError('This tag does not have \
-                                the attribute that is being looked for')
-                    # if we want to return ALL attribute keys and values
-                    else:
-                        attr_amount = len(attrs)
-                        if attr_amount == 1:
-                            self.__tag_result[current_tag\
-                            ['attribute_target_name']] = attrs[0]
-                        elif attr_amount > 1:
-                            self.__tag_result[current_tag\
-                            ['attribute_target_name']] = attrs
-                        else:
-                            self.__tag_result[current_tag\
-                            ['attribute_target_name']] = None
+                # but only if there is something to acquire
+                if current_tag.get('attribute_target_name', None) is not None\
+                    and len(attrs) > 0:
+                    self.__acquire_attribute_data(current_tag, attrs)
                 # If there is subtags, next tags is set to them,
                 # actual processing is done in the handle_data method.
-                self.__next_tags = current_tag['subtags']
+                self.__current_tags = current_tag.get('subtags', None)
                 # As the tag has been found, break for loop
                 break
         # tag counter, this helps track when the tag ends
@@ -188,16 +146,25 @@ class GenericHTMLParser(HTMLParser):
         :type data: str
         .. note::
             Overwritten method from HTMLParser, should not be called directly
-
+            As code was duplicated all code was moved to add_to_data function
         """
-        if self.__getdata:
-            # add data information to result
-            self.__tag_result[self.__found_tag['data_target_name']] = data
-            self.__getdata = False
-        if self.__next_tags is not None:
-            # set __current_tags to the subtags of the found tag
-            # this will make it search for subtag data
-            self.__current_tags = self.__next_tags
+        self.__add_to_data(data)
+
+    def handle_charref(self, name):
+        """ Handle hex and numerical characters
+        :param name: Text that is not classified as HTML
+        :type name: str
+        .. note::
+            Overwritten method from HTMLParser, should not be called directly
+            Code to convert name to character was copied from Pythons
+            HTMLParser example http://docs.python.org/2/library/htmlparser.html
+        """
+        if self.__getdata and self.__tag_counter == 1:
+            if name.startswith('x'):
+                name = unichr(int(name[1:], 16))
+            else:
+                name = unichr(int(name))
+            self.__add_to_data(name)
 
     def handle_endtag(self, tag):
         """ Handle end of a tag.
@@ -205,7 +172,6 @@ class GenericHTMLParser(HTMLParser):
         :type tag: str
         .. note::
             Overwritten method from HTMLParser, should not be called directly
-
         """
         # if the tag is the one we are looking for, decrement counter
         if self.__found_tag is not None and tag == self.__found_tag['tag']:
@@ -221,8 +187,8 @@ class GenericHTMLParser(HTMLParser):
                 # restore the results from the outer tag
                 self.__tag_result = prev_tag['tag_result']
                 # add the result of the sub tag to the outer tag
-                if subtag['ignore']:
-                    if subtag['multiple_tags']:
+                if subtag.get('ignore', False):
+                    if subtag.get('multiple_tags', False):
                         # there will only ever be one subtag_target
                         for subtag_target in subtag_result:
                             try:
@@ -240,20 +206,78 @@ class GenericHTMLParser(HTMLParser):
                 self.__current_tags = prev_tag['previous_tags']
                 self.__found_tag = prev_tag['found_tag']
                 self.__tag_counter = prev_tag['tag_counter']
+                self.__getdata = prev_tag['get_data']
+
+    def __acquire_attribute_data(self, pattern_tag, parsed_tag_attributes):
+        """ Adds data from an attribute to result
+        :param pattern_tag: dict from the parsers tag_pattern
+        :type pattern_tag: dict
+        :param parsed_tag_attributes: list of tuples with attributes and values
+        :type parsed_tag_attributes: list
+        """
+        # if we only want to acquire information from one
+        # attribute, store without a list
+        return_attributes = pattern_tag.get('return_attributes', [])
+        if len(return_attributes) == 1:
+            for attribute in parsed_tag_attributes:
+                # if the attribute key is the same
+                if attribute[0] == return_attributes[0]:
+                    self.__tag_result[pattern_tag\
+                        ['attribute_target_name']] = attribute[1]
+        # if we want to return the values
+        # of more than one attribute, store in a lsit
+        elif len(return_attributes) > 1:
+            returned_attributes = []
+            for returnattribute in return_attributes:
+                for attribute in parsed_tag_attributes:
+                    # if attribute is the same as the
+                    # return attribute, append its value
+                    if attribute[0] == returnattribute:
+                        returned_attributes.append(attribute[1])
+            # if there is something to return, return it
+            if len(returned_attributes) > 0:
+                self.__tag_result[pattern_tag[\
+                'attribute_target_name']] = returned_attributes
+            # if there is no result raise an exception
+            # since there should alway be in the tag, that
+            # is being looked for.
+            else:
+                raise ParseFailError('This tag does not have \
+                    the attribute that is being looked for')
+        # if we want to return ALL attribute keys and values
+        else:
+            attr_amount = len(parsed_tag_attributes)
+            if attr_amount == 1:
+                self.__tag_result[pattern_tag\
+                ['attribute_target_name']] = parsed_tag_attributes[0]
+            else:
+                self.__tag_result[pattern_tag\
+                ['attribute_target_name']] = parsed_tag_attributes
+
+
+    def __add_to_data(self, value):
+        """ Adds a value to the data return value
+        :param value: String to add to data result.
+        :type value: str
+        """
+        # if we want to get data, and in same tag
+        if self.__getdata and self.__tag_counter == 1:
+            # add data information to result
+            prev_data = self.__tag_result.\
+                get(self.__found_tag['data_target_name'], '')
+            self.__tag_result[self.__found_tag['data_target_name']] = \
+                prev_data + value
 
     def __add_subtag_data_to_result(self, value):
         """ Adds data from a subtag to the end result
         :param value: Dict with results from a subtag,
                         has same structure as the end result
-        :type tag: dict
-        .. note::
-            Overwritten method from HTMLParser, should not be called directly
-
+        :type value: dict
         """
-        tag_target_name = self.__found_tag['tag_target_name']
+        tag_target_name = self.__found_tag.get('tag_target_name', None)
         # this function relies on found_tag not having been reset to outer tag
         # and tag_result having been set to outer tag
-        if self.__found_tag['multiple_tags']:
+        if self.__found_tag.get('multiple_tags', False):
             # if there is only one type of result in tag, ignore tag_target
             if len(value) == 1:
                 for single_result in value:
@@ -274,11 +298,9 @@ class GenericHTMLParser(HTMLParser):
             else:
                 self.__tag_result[tag_target_name] = value
 
-
 # Simple exception for use in the parser in case something fails.
 class ParseFailError(Exception):
     """
         Simple exception class that passes all responsibility to super class.
-
     """
     pass
