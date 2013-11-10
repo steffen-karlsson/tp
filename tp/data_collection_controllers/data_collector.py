@@ -146,7 +146,7 @@ def __save_user(data):
 
 
 def __save_company(data, category):
-    domain_name = "{}{}".format(TP_BASEURL, data['url'])
+    domain_name = "{}{}".format(TP_BASEURL.encode('utf-8'), data['url'])
     try:
         company = Company.get(Company.domain_name == domain_name)
         company_received = True
