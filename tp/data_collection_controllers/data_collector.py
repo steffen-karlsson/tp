@@ -11,10 +11,8 @@ from parser_factory import _create_review_parser_first
 from functools import partial
 from util.helpers import to_utc_timstamp, now
 
-TP_BASEURL = 'http://www.trustpilot.dk/'
-REVIEW_BASEURL = "{}review/".format(TP_BASEURL)
-CATEGORY_BASEURL = "{}categories/".format(TP_BASEURL)
-CATEGORY_AJAX_URL = "{}ajaxresults".format(CATEGORY_BASEURL)
+TP_BASEURL = 'http://www.trustpilot.dk'
+CATEGORY_AJAX_URL = "{}categories/ajaxresults".format(TP_BASEURL)
 
 CREATED_AT_FORMAT = '%Y-%m-%dT%H:%M:%S'
 NONE = -1
@@ -22,8 +20,7 @@ COMPANIES_PER_PAGE = 20
 
 
 def __get_review_url(company_address, page=None):
-    return '{}{}?page={}'.format(REVIEW_BASEURL, company_address,
-                                 1 if page is None else page)
+    return '{}?page={}'.format(company_address, 1 if page is None else page)
 
 
 def __get_category_url(category_id, page):
@@ -149,16 +146,7 @@ def __save_user(data):
 
 
 def __save_company(data, category):
-    domain_name = data['url']
-    domain_name = domain_name.split(REVIEW_BASEURL)[1]\
-        if domain_name.startswith(REVIEW_BASEURL)\
-        else domain_name.split('/review/')[1]\
-        if domain_name.startswith('/review/')\
-        else ""
-    domain_name = domain_name\
-        if domain_name.startswith('www.')\
-        else "www.{}".format(domain_name)
-
+    domain_name = "{}{}".format(TP_BASEURL, data['url'])
     try:
         company = Company.get(Company.domain_name == domain_name)
         company_received = True
