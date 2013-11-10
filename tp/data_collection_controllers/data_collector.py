@@ -12,7 +12,7 @@ from functools import partial
 from util.helpers import to_utc_timstamp, now
 
 TP_BASEURL = 'http://www.trustpilot.dk'
-CATEGORY_AJAX_URL = "{}categories/ajaxresults".format(TP_BASEURL)
+CATEGORY_AJAX_URL = "{}/categories/ajaxresults".format(TP_BASEURL)
 
 CREATED_AT_FORMAT = '%Y-%m-%dT%H:%M:%S'
 NONE = -1
