@@ -33,7 +33,7 @@ def generate():
         # Samme dag ved start tidspunktet
         delta_hours = (MIN_START_TIME - hour)
         delta_minutes = -minute
-    elif MIN_START_TIME < hour > MAX_START_TIME > MIN_START_TIME:
+    elif MIN_START_TIME < hour >= MAX_START_TIME > MIN_START_TIME:
         # Skal køre på min start tid næste dag, hvis ikke
         # min start er større end max start.
         delta_hours = (MIN_START_TIME - hour)
