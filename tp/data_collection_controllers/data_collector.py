@@ -112,7 +112,7 @@ def companies_for_category(category):
 
 
 def __save_review(data, company, update_time):
-    created_at = data['created_at']
+    created_at = str(data['created_at']).split('.')[0]
     tp_review_id = data['tp_review_id']
     local_unixtimestamp = datetime.strptime(
         created_at, CREATED_AT_FORMAT).strftime('%s')
