@@ -45,8 +45,6 @@ def reviews_for_company(company):
             __url = __get_review_url(company.domain_name.encode('utf-8'),
                                      page=page_count)
             __response = download(__url)
-            print __response.read()
-            return
             # If its the first page, the use the custom parser,
             # which is paring the review count and the tp score,
             # other than than the reviews too.

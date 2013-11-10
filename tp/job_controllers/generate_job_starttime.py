@@ -24,7 +24,6 @@ def generate():
     minute = int(next_job.strftime('%M'))
     seconds = int(next_job.strftime('%S'))
 
-    print hour
     delta_hours = 0
     delta_days = 0
     delta_minutes = 0
