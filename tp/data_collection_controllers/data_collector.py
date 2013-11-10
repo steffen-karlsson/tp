@@ -42,9 +42,11 @@ def reviews_for_company(company):
     # At the page pr round.
     while review_count >= 0:
         try:
-            __url = __get_review_url(company.domain_name,
+            __url = __get_review_url(company.domain_name.encode('utf-8'),
                                      page=page_count)
             __response = download(__url)
+            print __response.read()
+            return
             # If its the first page, the use the custom parser,
             # which is paring the review count and the tp score,
             # other than than the reviews too.
@@ -146,7 +148,7 @@ def __save_user(data):
 
 
 def __save_company(data, category):
-    domain_name = "{}{}".format(TP_BASEURL.encode('utf-8'), data['url'])
+    domain_name = TP_BASEURL + data['url']
     try:
         company = Company.get(Company.domain_name == domain_name)
         company_received = True
