@@ -33,6 +33,7 @@ def _create_review_parser():
     parsing_pattern = __create_review_parser_pattern()
     return GenericHTMLParser(parsing_pattern)
 
+
 def _create_review_parser_first():
     parsing_pattern = __create_review_parser_pattern()
     parsing_pattern.extend([{
