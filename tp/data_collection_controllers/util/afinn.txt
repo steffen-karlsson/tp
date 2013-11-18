@@ -615,7 +615,7 @@ festligst	2
 festligste	2
 festligt	2
 fiasko	-3
-fik	2
+#fik	2
 fiks	2
 fin	2
 fine	2
@@ -1229,8 +1229,8 @@ ignorere	-1
 ignorerede	-1
 ignorerer	-1
 ignoreret	-2
-ikke god	-2
-ikke sjovt	-3
+#ikke god	-2
+#ikke sjovt	-3
 ikke-godkendt	-2
 ikke-forsikrede	-2
 ikke-forsikret	-2
@@ -2055,7 +2055,7 @@ ramaskriget	-2
 ramt	-2
 rar	2
 rase	-2
-rasende	-3
+#rasende	-3
 raser	-2
 raseri	-2
 rastløs	-2
@@ -3124,3 +3124,31 @@ yummy	3
 årvågen	3
 årvågne	3
 årvågent	3
+#TILFØJET EKSTRA ORD
+fornøjelse	3
+tilfreds	2
+tilfredse	2
+tilfredshed	2
+tilfredsheden	2
+supergod	4
+gode	3
+uldne	-2
+bortfaldet	-2
+bortfalde	-2
+lynhurtigt	2
+lynhurtig	2
+rasende	-5
+defekt	-3
+sublimt	5
+plus	1
+minus	-1
+:-)	3
+:)	3
+(-:	3
+(:	3
+:-D	4
+:D	4
+:-(	-3
+:(	-3
+)-:	-3
+):	-3
