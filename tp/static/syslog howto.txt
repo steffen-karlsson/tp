@@ -1,0 +1,5 @@
+HOWTO: setup syslog daemon to allow logging output from program to file.
+Tested on: Debian 7/Wheezy, Lubuntu Linux 13.10
+Requires: logged in as root or using sudo
+sudo cp 30-tp.conf /etc/rsyslog.d
+sudo service rsyslog restart
