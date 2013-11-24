@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-.. module:: Generic HTML parser
+.. module:: GenericHTMLParser
     :synopsis: A generic parser, that makes it simpler to parse data while
                 maintaining the advantages of using an event-driven parser
 .. moduleauthor:: Rune Thor Mårtensson <mail@runetm.dk>
@@ -13,12 +13,7 @@ as well as how to return the data.
 As this parser only iterates over the HTML once, it "SHOULD" be faster
 than using Beautifulsoup, but this is untested.
 
-v. 0.2.1
-Features that need verification after changes to code
-- Verify Sphinx documentation works
-- Make sure it works with tags without ends (br, hr and so on)
-- Parser is unable to get javascript data, probably because handle_data
- can be fired multiple times, and will need to be redone.
+v. 0.3
 """
 
 from HTMLParser import HTMLParser
@@ -35,7 +30,10 @@ class GenericHTMLParser(HTMLParser):
     """
 
     def __init__(self, parsing_pattern):
-        """ This function initializes the parser
+        """
+
+        This function initializes the parser
+
         :param parsing_pattern: A list that describes how html should be parsed
         :type parsing_pattern: list
         """
@@ -48,7 +46,10 @@ class GenericHTMLParser(HTMLParser):
         self.__found_tag = None
 
     def reset(self):
-        """ function to reset parser, calls super reset and cleans up variables
+        """
+
+        function to reset parser, calls super reset and cleans up variables
+
         .. note::
             Overwritten method from HTMLParser, should not be called directly
         """
@@ -61,7 +62,10 @@ class GenericHTMLParser(HTMLParser):
 
     # Parse the contents of a file or file-like object
     def parse(self, html_text):
-        """ Parse the provided html_text
+        """
+
+        Parse the provided html_text
+
         :param html_text: A string of HTML
         :type html_text: str
         :returns: dict -- parsed data
@@ -79,14 +83,18 @@ class GenericHTMLParser(HTMLParser):
         return self.__tag_result
 
     def handle_starttag(self, tag, attrs):
-        """ Handle start of a tag.
+        """
+
+        Handle start of a tag.
+
         :param tag: Lowercased tag name
         :type tag: str
         :param attrs: A list of tuples with attributes in the tag.
         :type attrs: list
         :raises: ParseFailError
-        .. note::
-            Overwritten method from HTMLParser, should not be called directly
+
+        .. note:: Overwritten method from HTMLParser, should not be called\
+            directly
         """
         # if tag is a break tag call add_to_data function,
         # which adds <br>, if we are looking for data and is in same tag
@@ -141,9 +149,13 @@ class GenericHTMLParser(HTMLParser):
             self.__tag_counter += 1
 
     def handle_data(self, data):
-        """ Handle data in between a tag
+        """
+
+        Handle data in between a tag
+
         :param data: Text that is not classified as HTML
         :type data: str
+
         .. note::
             Overwritten method from HTMLParser, should not be called directly
             As code was duplicated all code was moved to add_to_data function
@@ -151,9 +163,13 @@ class GenericHTMLParser(HTMLParser):
         self.__add_to_data(data)
 
     def handle_charref(self, name):
-        """ Handle hex and numerical characters
+        """
+
+        Handle hex and numerical characters
+
         :param name: Text that is not classified as HTML
         :type name: str
+
         .. note::
             Overwritten method from HTMLParser, should not be called directly
             Code to convert name to character was copied from Pythons
@@ -167,9 +183,13 @@ class GenericHTMLParser(HTMLParser):
             self.__add_to_data(name)
 
     def handle_endtag(self, tag):
-        """ Handle end of a tag.
+        """
+
+        Handle end of a tag.
+
         :param tag: Lowercased tag name
         :type tag: str
+
         .. note::
             Overwritten method from HTMLParser, should not be called directly
         """
@@ -209,7 +229,10 @@ class GenericHTMLParser(HTMLParser):
                 self.__getdata = prev_tag['get_data']
 
     def __acquire_attribute_data(self, pattern_tag, parsed_tag_attributes):
-        """ Adds data from an attribute to result
+        """
+
+        Adds data from an attribute to result
+
         :param pattern_tag: dict from the parsers tag_pattern
         :type pattern_tag: dict
         :param parsed_tag_attributes: list of tuples with attributes and values
@@ -257,7 +280,10 @@ class GenericHTMLParser(HTMLParser):
 
 
     def __add_to_data(self, value):
-        """ Adds a value to the data return value
+        """
+
+        Adds a value to the data return value
+
         :param value: String to add to data result.
         :type value: str
         """
@@ -270,7 +296,10 @@ class GenericHTMLParser(HTMLParser):
                 prev_data + value
 
     def __add_subtag_data_to_result(self, value):
-        """ Adds data from a subtag to the end result
+        """
+
+        Adds data from a subtag to the end result
+
         :param value: Dict with results from a subtag,
                         has same structure as the end result
         :type value: dict
@@ -299,7 +328,6 @@ class GenericHTMLParser(HTMLParser):
             else:
                 self.__tag_result[tag_target_name] = value
 
-# Simple exception for use in the parser in case something fails.
 class ParseFailError(Exception):
     """
         Simple exception class that passes all responsibility to super class.
