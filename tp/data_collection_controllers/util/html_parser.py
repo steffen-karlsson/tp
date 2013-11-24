@@ -12,8 +12,6 @@ which makes it aware of what information it is supposed to look for
 as well as how to return the data.
 As this parser only iterates over the HTML once, it "SHOULD" be faster
 than using Beautifulsoup, but this is untested.
-
-v. 0.3
 """
 
 from HTMLParser import HTMLParser
@@ -51,7 +49,7 @@ class GenericHTMLParser(HTMLParser):
         function to reset parser, calls super reset and cleans up variables
 
         .. note::
-            Overwritten method from HTMLParser, should not be called directly
+            Overwritten method from HTMLParser, should not be called directly.
         """
         HTMLParser.reset(self)
         self.__tag_result = {}
@@ -93,8 +91,8 @@ class GenericHTMLParser(HTMLParser):
         :type attrs: list
         :raises: ParseFailError
 
-        .. note:: Overwritten method from HTMLParser, should not be called\
-            directly
+        .. note::
+            Overwritten method from HTMLParser, should not be called directly.
         """
         # if tag is a break tag call add_to_data function,
         # which adds <br>, if we are looking for data and is in same tag
@@ -157,8 +155,7 @@ class GenericHTMLParser(HTMLParser):
         :type data: str
 
         .. note::
-            Overwritten method from HTMLParser, should not be called directly
-            As code was duplicated all code was moved to add_to_data function
+            Overwritten method from HTMLParser, should not be called directly.
         """
         self.__add_to_data(data)
 
@@ -171,7 +168,7 @@ class GenericHTMLParser(HTMLParser):
         :type name: str
 
         .. note::
-            Overwritten method from HTMLParser, should not be called directly
+            Overwritten method from HTMLParser, should not be called directly.
             Code to convert name to character was copied from Pythons
             HTMLParser example http://docs.python.org/2/library/htmlparser.html
         """
@@ -191,7 +188,7 @@ class GenericHTMLParser(HTMLParser):
         :type tag: str
 
         .. note::
-            Overwritten method from HTMLParser, should not be called directly
+            Overwritten method from HTMLParser, should not be called directly.
         """
         # if the tag is the one we are looking for, decrement counter
         if self.__found_tag is not None and tag == self.__found_tag['tag']:
