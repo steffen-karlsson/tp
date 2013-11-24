@@ -52,7 +52,7 @@ def reviews_for_company(company):
                 __html_parser_first = _create_review_parser_first()
                 __parsed_data = __html_parser_first.parse(__response.read())
                 review_count = int(__parsed_data.get('review_count', 0))
-                tp_score = float(__parsed_data.get('top_score', 0))
+                tp_score = float(__parsed_data.get('tp_score', 0))
 
                 # Updating the company with the review count
                 Company.update(review_count=review_count).where(
@@ -118,10 +118,10 @@ def __save_review(data, company, update_time):
         created_at, CREATED_AT_FORMAT).strftime('%s')
     created_at = to_utc_timstamp(local_unixtimestamp)
 
-    if created_at < update_time:
+    if created_at < int(update_time):
         return False
     try:
-        Review.get(Review.review == tp_review_id)
+        Review.get(Review.tp_review == tp_review_id)
         return False
     except DoesNotExist:
         user = __save_user(data['user'])
@@ -137,7 +137,7 @@ def __save_review(data, company, update_time):
 
 def __save_user(data):
     review_count = int(data['review_count'].split()[0])
-    name = data['name']
+    name = data['author']
     #todo: name used to find gender of user
     user = User(gender='und',
                 review_count=review_count)
