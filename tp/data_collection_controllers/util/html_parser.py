@@ -2,11 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 .. module:: GenericHTMLParser
-    :synopsis: A generic parser, that makes it simpler to parse data while
-                maintaining the advantages of using an event-driven parser
-.. moduleauthor:: Rune Thor Mårtensson <mail@runetm.dk>
 
-"Generic" SAX-styled HTML parser
+"Generic" SAX-styled event driven HTML parser
 Idea is that you can feed the parser some information,
 which makes it aware of what information it is supposed to look for
 as well as how to return the data.
@@ -67,15 +64,11 @@ class GenericHTMLParser(HTMLParser):
         :param html_text: A string of HTML
         :type html_text: str
         :returns: dict -- parsed data
-        :raises: ParseFailError
         """
         # reset parser to original state
         self.reset()
         # Use Beautiful Soup UnicodeDammit to decode to unicode
         decoded_html = UnicodeDammit(html_text, is_html=True)
-        # If unicodedammit was unable to convert to unicode, raise exception
-        if not decoded_html.unicode_markup:
-            raise ParseFailError('Unable to convert HTML to unicode')
         # Feed parser
         self.feed(decoded_html.unicode_markup)
         return self.__tag_result
@@ -100,9 +93,6 @@ class GenericHTMLParser(HTMLParser):
             and self.__found_tag.get('keep_break_tags', False)\
             and tag == 'br':
             self.__add_to_data('<br>')
-        # if we are not looking for tags, return immediately
-        if self.__current_tags is None:
-            return
         # if a subtag has been found in this iteration this var is set to true
         new_tag_found = False
         # if the tag is the same that we are looking for,
@@ -138,7 +128,7 @@ class GenericHTMLParser(HTMLParser):
                     self.__acquire_attribute_data(current_tag, attrs)
                 # If there is subtags, next tags is set to them,
                 # actual processing is done in the handle_data method.
-                self.__current_tags = current_tag.get('subtags', None)
+                self.__current_tags = current_tag.get('subtags', [])
                 # As the tag has been found, break for loop
                 break
         # tag counter, this helps track when the tag ends
