@@ -1,6 +1,6 @@
 from logging import getLogger as logging_getLogger
 from logging import config
-from logging import DEBUG as logging_DEBUG
+from logging import DEBUG as LOGGING_DEBUG
 
 LOGGING = {
     'version': 1,
@@ -21,12 +21,13 @@ LOGGING = {
     'loggers': {
         'tp-logger': {
             'handlers': ['tp-logger'],
-            'level': logging_DEBUG,
+            'level': LOGGING_DEBUG,
             'propagate': True,
             },
         }
     }
 config.dictConfig(LOGGING)
 
-def getLogger():
+
+def get_logger():
     return logging_getLogger("tp-logger")

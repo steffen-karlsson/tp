@@ -315,6 +315,7 @@ class GenericHTMLParser(HTMLParser):
             else:
                 self.__tag_result[tag_target_name] = value
 
+
 class ParseFailError(Exception):
     """
         Simple exception class that passes all responsibility to super class.
