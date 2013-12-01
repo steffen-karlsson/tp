@@ -60,8 +60,8 @@ def __execute_job(job):
     Function for executing a job and saving
     state of the job depending on the type.
 
-    :param value: a Job which is ready to be executed
-    :type value: Job
+    :param job: a Job which is ready to be executed
+    :type job: Job
     """
     _type = job.type
     if _type == TYPE_CATEGORY:
