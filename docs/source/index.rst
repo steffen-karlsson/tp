@@ -11,8 +11,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   html_parser
-   classifier
+   data_collection
+   orm
+   logging
+   job
 
 Indices and tables
 ==================

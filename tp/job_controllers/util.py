@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+.. module:: util
+
+"""
+
 from tp.job_controllers import TERMINATED
 from tp.job_controllers import MIN_START_TIME, MAX_START_TIME, JOBS_PER_HOUR
 from tp.orm.models import Job
@@ -10,7 +15,13 @@ from datetime import datetime, timedelta
 JOB_FREQUENCY = 60 * 60 / JOBS_PER_HOUR
 
 
-def generate():
+def generate_starttime():
+    """
+    Utility function to find and return the next available time slot
+    in the job queue.
+
+    :returns: int -- unix time stamp
+    """
     last_running_job = Job.select().where(Job.status != TERMINATED)\
         .order_by(Job.start_time.desc()).first()
     if last_running_job:
