@@ -3,9 +3,7 @@
 """
 .. module:: MultiTopicClassifier
 
-MultiTopicClassifier is a "container" which contains x number of classifiers,
-the number depends on the number of training sets which is used as arguments
-for the train method.
+This module only contains the MultiTopicClassifier.
 """
 
 from nltk import FreqDist, NaiveBayesClassifier, wordpunct_tokenize
@@ -15,9 +13,11 @@ from nltk.corpus import stopwords
 from string import punctuation
 
 
-class MultiTopicClassifier():
+class MultiTopicClassifier(object):
     """
-
+    MultiTopicClassifier is a "container" which contains x number of
+    classifiers, the number depends on the number of training sets which
+    is used as arguments for the train method.
     """
 
     def __init__(self):
@@ -64,7 +64,8 @@ class MultiTopicClassifier():
         with open(filename, 'r') as training_file:
             for _line in training_file.readlines():
                 word_list = []
-                for word in wordpunct_tokenize(decode(_line.split('\t')[0], 'utf-8')):
+                sentence = decode(_line.split('\t')[0],'utf-8')
+                for word in wordpunct_tokenize(sentence):
                     word = encode(word, 'utf-8').translate(None, punctuation)
                     if word:
                         word_list.append(word)
@@ -86,10 +87,13 @@ class MultiTopicClassifier():
         """
         all_words = FreqDist([w.lower() for w in all_words]).keys()[:20]
         _topic_sentence_lists = list(self._topic_sentence_lists)
-        sentences = [(list(sentence), True) for sentence in _topic_sentence_lists.pop(index)] \
-                    + [(list(sentence), False) for sentence in sum(_topic_sentence_lists, [])]
+        sentences = [(list(sentence), True) for sentence
+                     in _topic_sentence_lists.pop(index)] \
+                    + [(list(sentence), False) for sentence
+                       in sum(_topic_sentence_lists, [])]
         shuffle(sentences)
-        feature_set = [(self._sentence_features(d, all_words), c) for (d, c) in sentences]
+        feature_set = [(self._sentence_features(d, all_words), c)
+                       for (d, c) in sentences]
         return NaiveBayesClassifier.train(feature_set)
 
     @staticmethod
