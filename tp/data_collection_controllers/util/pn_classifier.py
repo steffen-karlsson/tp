@@ -51,7 +51,7 @@ class MultiTopicClassifier(object):
             self._classifiers.append(classifier)
         return self
 
-    def _tokenize_training_data(self, filename):
+    def __tokenize_training_data(self, filename):
         """
 
         Local function which tokenize a training set from a file name.
@@ -73,7 +73,7 @@ class MultiTopicClassifier(object):
         return words, [word for word_list in words for word in word_list
                        if word.isalpha() and word not in self._da_stopwords]
 
-    def _get_classifier(self, all_words, index):
+    def __get_classifier(self, all_words, index):
         """
 
         Local function which returns a classifier for a topic,
@@ -97,7 +97,7 @@ class MultiTopicClassifier(object):
         return NaiveBayesClassifier.train(feature_set)
 
     @staticmethod
-    def _sentence_features(sentence, all_words):
+    def __sentence_features(sentence, all_words):
         """
 
         Local static function which finds the feature set of a sentence from
