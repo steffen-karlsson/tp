@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
 
    html_parser
+   classifier
 
 Indices and tables
 ==================
