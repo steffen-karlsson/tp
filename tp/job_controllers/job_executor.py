@@ -1,22 +1,40 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+.. module:: job_executor
+
+"""
 
 from tp.orm.models import Job, Category, Company
 from tp.data_collection_controllers.util.helpers import to_utc_timstamp, now
-from tp.data_collection_controllers.data_collector import companies_for_category, reviews_for_company
-from tp.job_controllers import *
+from tp.data_collection_controllers.data_collector \
+    import companies_for_category
+from tp.data_collection_controllers.data_collector \
+    import reviews_for_company
+from tp.job_controllers import IN_QUEUE, EXECUTING, TERMINATED
+from tp.job_controllers import TYPE_CATEGORY, TYPE_COMPANY
 from peewee import DoesNotExist
 
 
 class JobTypeNotFoundException(Exception):
+    """
+    Simple exception class which is being raised
+    if the job type doesn't exists.
+    """
     pass
 
 
 def process_jobs():
+    """
+
+    This function finds jobs from the database, with a starting time stamp
+    older than now and executes them.
+    """
     utc_now = to_utc_timstamp(now())
     try:
         jobs = Job.select().where((Job.start_time <= utc_now)
-                                  & (Job.status == IN_QUEUE)).order_by(Job.start_time.asc())
+                                  & (Job.status == IN_QUEUE)
+                                  ).order_by(Job.start_time.asc())
     except DoesNotExist:
         return
     job_count = jobs.count()
@@ -37,6 +55,14 @@ def process_jobs():
 
 
 def __execute_job(job):
+    """
+
+    Function for executing a job and saving
+    state of the job depending on the type.
+
+    :param value: a Job which is ready to be executed
+    :type value: Job
+    """
     _type = job.type
     if _type == TYPE_CATEGORY:
         category_id = job.target

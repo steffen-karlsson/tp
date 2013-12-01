@@ -1,5 +1,5 @@
 Util
 ====================
 
-.. automodule:: tp.job_controllers.generate_job_starttime
+.. automodule:: tp.job_controllers.util
     :members:
