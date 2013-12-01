@@ -17,11 +17,11 @@ from bs4 import UnicodeDammit
 
 class GenericHTMLParser(HTMLParser):
     """
-        This class extends Pythons HTMLParser, with a framework that lets the
-        user define what the parser is supposed to look for, as well as how to
-        return it.
+    This class extends Pythons HTMLParser, with a framework that lets the
+    user define what the parser is supposed to look for, as well as how to
+    return it.
 
-        All public methods, except for parse, are overwritten from HTMLParser
+    All public methods, except for parse, are overwritten from HTMLParser
     """
 
     def __init__(self, parsing_pattern):

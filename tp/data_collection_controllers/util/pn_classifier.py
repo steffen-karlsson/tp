@@ -4,9 +4,8 @@
 .. module:: MultiTopicClassifier
 
 MultiTopicClassifier is a "container" which contains x number of classifiers,
-the number depends on the number of training sets which is used as arguments for
-the train method.
-
+the number depends on the number of training sets which is used as arguments
+for the train method.
 """
 
 from nltk import FreqDist, NaiveBayesClassifier, wordpunct_tokenize
@@ -17,9 +16,13 @@ from string import punctuation
 
 
 class MultiTopicClassifier():
+    """
+
+    """
 
     def __init__(self):
         """
+
         This function initializes the MultiTopicClassifier.
         """
         self._da_stopwords = stopwords.words('danish')
@@ -29,12 +32,13 @@ class MultiTopicClassifier():
 
     def train(self, topic_train_files):
         """
+
         Public function to train x numbers of classifiers depending
         on the number of training sets.
 
         :param topic_train_files: list of file names for the training sets
         :type topic_train_files: list
-        :returns: instance of MultiTopicClassifier
+        :returns: NaiveBayesClassifier -- trained
         """
         for filename in topic_train_files:
             _word_lists, _all_words = self._tokenize_training_data(filename)
@@ -49,6 +53,7 @@ class MultiTopicClassifier():
 
     def _tokenize_training_data(self, filename):
         """
+
         Local function which tokenize a training set from a file name.
 
         :param filename: file name for the training set
@@ -69,6 +74,7 @@ class MultiTopicClassifier():
 
     def _get_classifier(self, all_words, index):
         """
+
         Local function which returns a classifier for a topic,
         depending on the other x-1 topics.
 
@@ -76,7 +82,7 @@ class MultiTopicClassifier():
         :type all_words: list
         :param index: index of the current training set
         :type index: int
-        :returns: a trained NaiveBayesClassifier
+        :returns: NaiveBayesClassifier -- trained
         """
         all_words = FreqDist([w.lower() for w in all_words]).keys()[:20]
         _topic_sentence_lists = list(self._topic_sentence_lists)
@@ -89,6 +95,7 @@ class MultiTopicClassifier():
     @staticmethod
     def _sentence_features(sentence, all_words):
         """
+
         Local static function which finds the feature set of a sentence from
         the frequency distribution of a training set.
 
@@ -96,7 +103,7 @@ class MultiTopicClassifier():
         :type sentence: str
         :param all_words:
         :type all_words: FreqDist
-        :returns: dict - feature set
+        :returns: dict -- feature set
         """
         sentence_words = set(sentence)
         features = {}
@@ -106,13 +113,15 @@ class MultiTopicClassifier():
 
     def classify(self, text):
         """
-        Public function which is used to classify text depending on the classifiers,
-        which is buid upon the training sets applied using the train function.
 
-        :param text: text which needs to be classified depending on the classifiers
+        Public function which is used to classify text depending on the
+        classifiers, which is buid upon the training sets applied using
+        the train function. Returns a list of booleans reflecting the
+        result of the classifiers.
+
+        :param text: text which needs to be classified
         :type text: str
-        :returns: list of booleans reflecting the result of the classifiers
-        - True if the text is classified as the classifier, else False.
+        :returns: list -- boolean for each classifier.
         """
         text = wordpunct_tokenize(text)
         text = [self._sentence_features(text, all_words)
