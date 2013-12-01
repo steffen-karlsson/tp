@@ -12,7 +12,7 @@ from tp.job_controllers.util import generate_starttime
 
 def create_job_for_category(category):
     """
-    Function to create a job for receiving companies from a category
+    Function to create a job for receiving companies from a category.
 
     :param category: the category where the companies needs to be received.
     :type category: Category
