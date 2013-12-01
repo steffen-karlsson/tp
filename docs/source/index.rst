@@ -15,6 +15,7 @@ Contents:
    orm
    logging
    job
+   application
 
 Indices and tables
 ==================
