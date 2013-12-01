@@ -1,10 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+.. module:: parser_factory
 
-from util.html_parser import GenericHTMLParser
+This module contains the required patterns for the parsers used in this system.
+
+"""
+
+from tp.data_collection_controllers.util.html_parser import GenericHTMLParser
 
 
 def _create_category_parser():
+    """
+
+    Function to create a parser for a category page on trustpilot.dk.
+
+    :returns: GenericHTMLParser -- for category page.
+    """
     parsing_pattern = [
                         {
                             'tag':'div',
@@ -30,11 +42,27 @@ def _create_category_parser():
 
 
 def _create_review_parser():
+    """
+
+    Function to create a parser for a review page on trustpilot.dk.
+    Uses __create_review_parser_pattern to get the pattern, as it is shared
+    between this function and __create_review_parser_first.
+
+    :returns: GenericHTMLParser -- for review page.
+    """
     parsing_pattern = __create_review_parser_pattern()
     return GenericHTMLParser(parsing_pattern)
 
 
 def _create_review_parser_first():
+    """
+
+    Function to create a parser for the first review page on trustpilot.dk,
+    this page holds extra information, and thus is extends
+    _create_review_parser's functionality.
+
+    :returns: GenericHTMLParser -- for the first review page.
+    """
     parsing_pattern = __create_review_parser_pattern()
     parsing_pattern.extend([{
                             'tag':'meta',
@@ -52,6 +80,13 @@ def _create_review_parser_first():
 
 
 def __create_review_parser_pattern():
+    """
+
+    Function to create and return a pattern used to parse reviews
+    from the review page.
+
+    :returns: dict -- parsing pattern.
+    """
     parsing_pattern = [
                         {
                             'tag':'div',
