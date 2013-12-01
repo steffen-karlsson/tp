@@ -318,6 +318,6 @@ class GenericHTMLParser(HTMLParser):
 
 class ParseFailError(Exception):
     """
-        Simple exception class that passes all responsibility to super class.
+    Simple exception class that passes all responsibility to super class.
     """
     pass
