@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-.. module:: create_review_job
+.. module:: create_job_for_company_rating
 
 """
 
@@ -11,6 +11,9 @@ from tp.job_controllers.util import generate_starttime
 
 
 class NoReviewException(Exception):
+    """
+    Simple exception class that passes all responsibility to super class.
+    """
     pass
 
 
