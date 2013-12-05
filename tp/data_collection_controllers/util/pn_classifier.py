@@ -41,12 +41,11 @@ class MultiTopicClassifier(object):
         :returns: NaiveBayesClassifier -- trained
         """
         for filename in topic_train_files:
-            _word_lists, _all_words = self._tokenize_training_data(filename)
+            _word_lists, _all_words = self.__tokenize_training_data(filename)
             self._all_words_lists.append(_all_words)
             self._topic_sentence_lists.append(_word_lists)
         for index, all_words in enumerate(self._all_words_lists):
-            classifier = self._get_classifier(all_words,
-                                              index)
+            classifier = self.__get_classifier(all_words, index)
             #classifier.show_most_informative_features(10)
             self._classifiers.append(classifier)
         return self
@@ -92,7 +91,7 @@ class MultiTopicClassifier(object):
                     + [(list(sentence), False) for sentence
                        in sum(_topic_sentence_lists, [])]
         shuffle(sentences)
-        feature_set = [(self._sentence_features(d, all_words), c)
+        feature_set = [(self.__sentence_features(d, all_words), c)
                        for (d, c) in sentences]
         return NaiveBayesClassifier.train(feature_set)
 
@@ -128,7 +127,7 @@ class MultiTopicClassifier(object):
         :returns: list -- boolean for each classifier.
         """
         text = wordpunct_tokenize(text)
-        text = [self._sentence_features(text, all_words)
+        text = [self.__sentence_features(text, all_words)
                 for all_words in self._all_words_lists]
         for index, classifier in enumerate(self._classifiers):
             yield classifier.classify(text[index])
