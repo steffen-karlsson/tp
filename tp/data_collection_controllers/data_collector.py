@@ -5,11 +5,15 @@ from tp.orm.models import Company, Review, User
 from tp.orm.models import Rating, CompanyCategory, CategoryPosition
 from datetime import datetime
 from peewee import DoesNotExist
-from util.downloader import download, DownloadFailError
-from parser_factory import _create_category_parser, _create_review_parser
-from parser_factory import _create_review_parser_first
-from functools import partial
-from util.helpers import to_utc_timstamp, now
+from tp.data_collection_controllers.util.downloader import download
+from tp.data_collection_controllers.util.downloader import DownloadFailError
+from tp.data_collection_controllers.parser_factory \
+    import _create_category_parser
+from tp.data_collection_controllers.parser_factory \
+    import _create_review_parser
+from tp.data_collection_controllers.parser_factory \
+    import _create_review_parser_first
+from tp.data_collection_controllers.util.helpers import to_utc_timstamp, now
 
 TP_BASEURL = 'http://www.trustpilot.dk'
 CATEGORY_AJAX_URL = "{}/categories/ajaxresults".format(TP_BASEURL)
@@ -99,8 +103,8 @@ def companies_for_category(category):
             if len(__parsed_data) == 0:
                 break
             companies = __parsed_data.get('companies', {})
-            map(partial(__save_company, category=category),
-                companies)
+            for company in companies:
+                __save_company(company, category)
             # If len of categories is less than 20, means we reached
             # last "page" in the category
             if len(companies) < COMPANIES_PER_PAGE:
@@ -137,7 +141,7 @@ def __save_review(data, company, update_time):
 
 def __save_user(data):
     review_count = int(data['review_count'].split()[0])
-    name = data['author']
+    #name = data['author']
     #todo: name used to find gender of user
     user = User(gender='und',
                 review_count=review_count)
