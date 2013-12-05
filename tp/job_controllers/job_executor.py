@@ -5,14 +5,16 @@
 
 """
 
-from tp.orm.models import Job, Category, Company
+from tp.orm.models import Job, Category, Company, Review
 from tp.data_collection_controllers.util.helpers import to_utc_timstamp, now
 from tp.data_collection_controllers.data_collector \
     import companies_for_category
 from tp.data_collection_controllers.data_collector \
     import reviews_for_company
+from tp.data_collection_controllers.data_collector \
+    import rating_for_company
 from tp.job_controllers import IN_QUEUE, EXECUTING, TERMINATED
-from tp.job_controllers import TYPE_CATEGORY, TYPE_COMPANY
+from tp.job_controllers import TYPE_CATEGORY, TYPE_COMPANY, TYPE_RATING
 from peewee import DoesNotExist
 
 
@@ -72,6 +74,9 @@ def __execute_job(job):
         company_id = job.target
         company = Company.get(Company.company == company_id)
         reviews_for_company(company)
+    elif _type == TYPE_RATING:
+        company_id = job.target
+        rating_for_company(company_id)
     else:
         raise JobTypeNotFoundException()
 
