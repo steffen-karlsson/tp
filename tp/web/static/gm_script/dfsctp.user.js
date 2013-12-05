@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Differentiated score
 // @namespace   dfsctp
-// @include     http://www.trustpilot.dk/review/www.av-connection.dk
+// @include     http://www.trustpilot.dk/*
 // @version     1
 // @grant       GM_xmlhttpRequest
 // @grant       GM_addStyle
@@ -24,26 +24,46 @@ function generateProgressBar(score){
     return $html;
 }
 
-function generateHTML(rma_score, price_score, delivery_score, general_score){
-    $html = '<div itemref="support-box-companyinfo" class="overview sbox clearfix">';
-    $html += '<div class="headline"><h1><span itemprop="name">Differentierede scores</span></h1>';
-    $html += '<div>RMA: </div>' + generateProgressBar(rma_score);
+function generateScores(rma_score, price_score, delivery_score, general_score){
+    $html = '<div>RMA: </div>' + generateProgressBar(rma_score);
     $html += '<div>Levering: </div>' + generateProgressBar(delivery_score);
     $html += '<div>Pris: </div>' + generateProgressBar(price_score);
     $html += '<div>Generelt: </div>' + generateProgressBar(general_score);
+    return $html;
+}
+function errorMessage(message){
+    return '<div>Det var ikke muligt at indlæse resultater for denne side' + message + '</div>';
+}
+
+function generateHTML(status, rma_score, price_score, delivery_score, general_score){
+    $html = '<div itemref="support-box-companyinfo" class="overview sbox clearfix">';
+    switch(status){
+      case 10:
+        $html += '<div class="headline"><h1><span itemprop="name">Differentierede scores</span></h1>';
+        $html += generateScores(rma_score, price_score, delivery_score, general_score);
+        break;
+      case 20:
+        $html += errorMessage(", da firmaet ikke er blevet indekseret.");
+        break;
+      case 21:
+        $html += errorMessage(", da firmaets anmeldelser ikke er blevet læst.");
+        break;
+      default:
+        $html += errorMessage(", da der er sket en ukendt fejl.");
+    }
     $html += '</div>';
     return $html;
 }
 
 GM_xmlhttpRequest({
   method: "POST",
-  url: "http://tp.test/ajax/review/",
+  url: "http://tp.runetm.dk/ajax/review/",
   data: "url="+document.URL,
   headers: {
     "Content-Type": "application/x-www-form-urlencoded"
   },
   onload: function(response) {
     data = JSON.parse(response.responseText)
-    $( generateHTML(data['rma_score'], data['price_score'],data['delivery_score'],data['general_score']) ).insertAfter('div.overview');
+    $( generateHTML(data['status'], data['rma_score'], data['price_score'],data['delivery_score'],data['general_score']) ).insertAfter('div.overview');
   }
 });
