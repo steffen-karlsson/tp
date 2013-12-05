@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS `tp`.`category_position` (
   `company_category_id` INT NOT NULL,
   `created_at` INT NOT NULL,
   `position` INT NOT NULL,
-  `group` ENUM('tp','average', 'rma', 'price', 'delivery') NOT NULL,
+  `group` ENUM('general', 'rma', 'price', 'delivery') NOT NULL,
   PRIMARY KEY (`company_category_id`, `created_at`),
   CONSTRAINT `fk_category_position_category1`
     FOREIGN KEY (`company_category_id`)
@@ -127,31 +127,11 @@ CREATE TABLE IF NOT EXISTS `tp`.`rating` (
   `company_id` INT NOT NULL,
   `created_at` INT NOT NULL,
   `value` FLOAT NOT NULL,
-  `group` ENUM('tp','average', 'rma', 'price', 'delivery') NOT NULL,
+  `group` ENUM('general', 'rma', 'price', 'delivery') NOT NULL,
   PRIMARY KEY (`company_id`, `created_at`),
   CONSTRAINT `fk_rating_company1`
     FOREIGN KEY (`company_id`)
     REFERENCES `tp`.`company` (`company_id`)
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `tp`.`computed_review_rating`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `tp`.`computed_review_rating` ;
-
-CREATE TABLE IF NOT EXISTS `tp`.`computed_review_rating` (
-  `review_id` INT NOT NULL,
-  `rma_value` FLOAT NULL,
-  `price_value` FLOAT NULL,
-  `delivery_value` FLOAT NULL,
-  `updated_at` INT NOT NULL,
-  PRIMARY KEY (`review_id`),
-  CONSTRAINT `fk_table1_review1`
-    FOREIGN KEY (`review_id`)
-    REFERENCES `tp`.`review` (`review_id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
