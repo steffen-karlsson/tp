@@ -136,24 +136,6 @@ class Review(BaseModel):
         db_table = 'review'
 
 
-class ComputedReviewRating(BaseModel):
-    """
-    Data class for ComputedReviewRating object referring
-    to `tp.computed_review_rating` in the database
-    """
-    delivery_value = FloatField(null=True)
-    price_value = FloatField(null=True)
-    review = ForeignKeyField(db_column='review_id', rel_model=Review)
-    rma_value = FloatField(null=True)
-    updated_at = IntegerField()
-
-    class Meta(object):
-        """
-        Simple class to define table name in database
-        """
-        db_table = 'computed_review_rating'
-
-
 class Job(BaseModel):
     """
     Data class for Job object referring to `tp.job` in the database
