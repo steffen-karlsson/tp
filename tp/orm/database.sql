@@ -124,11 +124,12 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `tp`.`rating` ;
 
 CREATE TABLE IF NOT EXISTS `tp`.`rating` (
+  `rating_id` INT NOT NULL AUTO_INCREMENT,
   `company_id` INT NOT NULL,
   `created_at` INT NOT NULL,
   `value` FLOAT NOT NULL,
   `group` ENUM('general', 'rma', 'price', 'delivery') NOT NULL,
-  PRIMARY KEY (`company_id`, `created_at`),
+  PRIMARY KEY (`rating_id`),
   CONSTRAINT `fk_rating_company1`
     FOREIGN KEY (`company_id`)
     REFERENCES `tp`.`company` (`company_id`)
