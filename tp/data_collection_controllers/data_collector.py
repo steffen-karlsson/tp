@@ -115,6 +115,14 @@ def companies_for_category(category):
             pass
 
 
+def ratings_for_company(domain_name):
+    company = Company.get(Company.domain_name == domain_name)
+    ratings = Rating.select().where(Rating.company == company.company)
+    for rating in ratings:
+        if rating.group != 'tp':
+            yield (rating.group, rating.value)
+
+
 def __save_review(data, company, update_time):
     created_at = str(data['created_at']).split('.')[0]
     tp_review_id = data['tp_review_id']
