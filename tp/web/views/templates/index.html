@@ -6,53 +6,70 @@
 	<link rel="stylesheet" href="static/css/bootstrap.min.css" media="screen">
 	<link rel="stylesheet" href="static/css/bootswatch.min.css">
 	<body>
-	<div class="navbar navbar-default">
-                <div class="navbar-header">
-                  <button data-target=".navbar-responsive-collapse" data-toggle="collapse" class="navbar-toggle" type="button">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                  </button>
-                  <a href="#" class="navbar-brand">Brand</a>
-                </div>
-                <div class="navbar-collapse collapse navbar-responsive-collapse">
-                  <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Active</a></li>
-                    <li><a href="#">Link</a></li>
-                    <li class="dropdown">
-                      <a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>
-                      <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li class="divider"></li>
-                        <li class="dropdown-header">Dropdown header</li>
-                        <li><a href="#">Separated link</a></li>
-                        <li><a href="#">One more separated link</a></li>
-                      </ul>
-                    </li>
-                  </ul>
-                  <form class="navbar-form navbar-left">
-                    <input type="text" placeholder="Search" class="form-control col-lg-8">
-                  </form>
-                  <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#">Link</a></li>
-                    <li class="dropdown">
-                      <a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>
-                      <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">Separated link</a></li>
-                      </ul>
-                    </li>
-                  </ul>
-                </div><!-- /.nav-collapse -->
-              </div>
-		<div class="jumbotron">
-                <p>Download the greasemonkey script today.</p>
-                <p><a class="btn btn-primary btn-lg" href="/static/gm_script/test.user.js">Download</a></p>
-              </div>
+	  <div class="navbar navbar-default">
+      <div class="navbar-header">
+        <button data-target=".navbar-responsive-collapse" data-toggle="collapse" class="navbar-toggle" type="button">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a href="#" class="navbar-brand">Improving trustpilot.dk's rating system with datamining and sentiment analysis.</a>
+      </div>
+      <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a data-toggle="dropdown" class="dropdown-toggle" href="#">Links <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="http://www.trustpilot.dk/">Trustpilot</a></li>
+              <li><a href="http://www.compute.dtu.dk/">DTU Compute</a></li>
+              <li><a href="http://www.kurser.dtu.dk/02819.aspx?menulanguage=en-GB">Course information</a></li>
+            </ul>
+          </li>
+          <li><a href="sphinx">Documentation</a></li>
+        </ul>
+      </div><!-- /.nav-collapse -->
+    </div>
+
+    <div class="panel panel-primary">
+      <div class="panel-body">
+        <div class="panel-body">
+          <div class="jumbotron">
+            <p>Download the Greasemonkey script today!</p>
+            <p><a class="btn btn-primary btn-lg" href="/static/gm_script/dfsctp.user.js">Download</a></p>
+            <p><i>The script has been tested in <a href="http://www.greasespot.net/">Greasemonkey</a> (Firefox) and <a href="http://tampermonkey.net/">Tampermonkey</a> (on Chrome).</i></p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="panel-heading"><h3 class="panel-title"><b>About this project</b></h3></div><br>
+          The purpose of this project, is to improve the quality of the rating system of rating site <a href="http://trustpilot.dk">Trustpilot</a>, by providing differentiated scores for different categories, which make up what we "feel" determine the quality of a webshop.<br>
+          The project was made for the course "<a href="http://www.kurser.dtu.dk/02819.aspx?menulanguage=en-GB">02819 Data Mining using Python</a>" at DTU (Technical University of Denmark).<br><br>
+          <b>Why is this necessary?</b><br>
+          <i>The current system is limited, by the fact that most reviews do not include all factors, often only about price or delivery.<br>
+          This compromises the rating system, because it might not correctly show how good a store is at handling <a href="http://en.wikipedia.org/wiki/Return_merchandise_authorization">RMA</a>.</i><br>
+          <br>
+          <b>What are the categories, you judge the quality of a webshop by?</b><br>
+          <i>At the moment: RMA, price and delivery, in addition to this we also have a general "rating", which is comprised of all the text in a review.</i>
+          <br>
+          The improvement is made through, the use of sentiment analysis, statistical classification and datamining.<br>
+          <br>
+          <b>What is the process of the system?</b><br>
+          <i>The process is simple, first individual reviews are downloaded from the website.<br>
+            Next our system reads the reviews, which combined with <a href="http://en.wikipedia.org/wiki/Statistical_classification">statistical classification</a> and <a href="http://en.wikipedia.org/wiki/Sentiment_analysis">sentiment analysis</a>, allows us to determine what is being talked about in the review and the opinion of the person reviewing the webshop.</i><br>
+          <br>
+          <b>Why is the userinterface implemented as a Greasemonkey script?</b><br>
+          <i>By using a Greasemonkey script, we are able to augment rather than replace the website, which we feel is the best solution, since Trustpilot is already an awesome page.</i><br>
+          <br>
+          <b>What technologies do you use?</b><br>
+          <i>The system is written in Python, using the library <a href="http://nltk.org/">NLTK</a> among others.</i><br>
+          <br>
+          <b>Do you intend to release the source code?</b><br>
+          <i>At the moment, no.<br>
+            However we might release the <a href="http://tp.runetm.dk/sphinx/html_parser.html">HTML scraper framework</a> we created for this project.</i><br>
+          <br>
+        </div>
+      </div>
+    </div>
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
 	</body>
 </html>
