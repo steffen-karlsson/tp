@@ -41,11 +41,11 @@ def get_review_page_information():
                                    delivery_score=ratings.get('delivery', 0),
                                    general_score=ratings.get('general', 0),
                                    status=10)
-                raise DoesNotExist()
+                return jsonify(status=20)
             except DoesNotExist:
                 return jsonify(status=21)
-        else:
-            return jsonify(status=20)
+
+    return index()
 
 
 @app.route('/')

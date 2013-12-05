@@ -13,7 +13,10 @@ from tp.data_collection_controllers.parser_factory \
     import _create_review_parser
 from tp.data_collection_controllers.parser_factory \
     import _create_review_parser_first
+from tp.data_collection_controllers.util.data_processor \
+    import ratings_for_company
 from tp.data_collection_controllers.util.helpers import to_utc_timstamp, now
+from numpy import mean
 
 TP_BASEURL = 'http://www.trustpilot.dk'
 CATEGORY_AJAX_URL = "{}/categories/ajaxresults".format(TP_BASEURL)
@@ -115,12 +118,16 @@ def companies_for_category(category):
             pass
 
 
-def ratings_for_company(domain_name):
-    company = Company.get(Company.domain_name == domain_name)
-    ratings = Rating.select().where(Rating.company == company.company)
-    for rating in ratings:
-        if rating.group != 'tp':
-            yield (rating.group, rating.value)
+def rating_for_company(company_id):
+    reviews = Review.select(Review.company).where(
+        Review.company == company_id)
+    ratings = ratings_for_company(reviews)
+    for k, v in ratings.items():
+        utc_now = to_utc_timstamp(now())
+        Rating(company=company_id,
+               created_at=utc_now,
+               group=k,
+               value=mean(v)).save()
 
 
 def __save_review(data, company, update_time):
