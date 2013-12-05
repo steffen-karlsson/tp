@@ -9,11 +9,20 @@ from string import digits
 from re import split as resplit
 from collections import defaultdict
 from os import path
+from tp.data_collection_controllers.util.pn_classifier \
+    import MultiTopicClassifier
 
 PATTERN = "<br>|\.[^a-zA-Z<]|\n|!|\?"
 
 TITLE_WEIGHT = 0.3
 SENTENCE_WEIGHT = 0.7
+
+if path.isfile('trainingset_rma.txt')\
+        and path.isfile('trainingset_levering.txt')\
+        and path.isfile('trainingset_pris.txt'):
+    CLASSIFIER = MultiTopicClassifier().train(['trainingset_rma.txt',
+                                               'trainingset_levering.txt',
+                                               'trainingset_pris.txt'])
 
 NEGATION_WORDS = {'ingen', 'ikke', 'intet', 'aldrig'}
 AMPLIFICATION_WORDS = dict({'utrolig': 1.2,
@@ -86,6 +95,11 @@ def __pn_sentiment_score(sentence):
                 amplification_factor = 1
                 negation_factor = 1
         last_word = word
+
+    if total_score > 10:
+        total_score = 10
+    elif total_score < -10:
+        total_score = -10
     return total_score
 
 
@@ -100,51 +114,72 @@ def __review_topic_and_score(review):
     :type review: Review
     :returns: float -- sentiment score for the sentence
     """
-    title = resplit(PATTERN, review.title)
-    sentences = resplit(PATTERN, review)
+    sentences = resplit(PATTERN, review.content)
     topic_score_dict = defaultdict(float)
     for sentence in sentences:
-        # for each sentense which is not empty, calculate
+        # for each sentence which is not empty, calculate
         # the pn sentiment score and get the topic(s).
         if sentence:
             topic_score_dict['total_sentence_count'] += 1
             score = __pn_sentiment_score(sentence)
-            #todo use classifier to find topic
-            topics = ["TBD"]
-            for topic in topics:
-                # each sentence can have multiple topics
-                topic_score_dict["{}_score".format(topic)] += score
-                topic_score_dict["{}_sentence_count".format(topic)] += 1
-    #todo: Title could have more sentences and by that more topics and scores
-    topic_score_dict['title'] = __pn_sentiment_score(title)
-    topic_score_dict['title_topics'] = ["TBD"]
+            topics = CLASSIFIER.classify(sentence)
+            topic_score_dict["general_score"] += score
+            for index, in_topic in enumerate(topics):
+                if in_topic:
+                    # each sentence can have multiple topics
+                    topic = 'rma' if index == 0\
+                        else 'delivery' if index == 1\
+                        else 'price'
+                    topic_score_dict["{}_score".format(topic)] += score
+                    topic_score_dict["{}_sentence_count".format(topic)] += 1
+    topic_score_dict['title'] = __pn_sentiment_score(review.title)
+    title_topics = []
+    for index, in_topic in enumerate(list(CLASSIFIER.classify(review.title))):
+        if in_topic:
+            topic = 'rma' if index == 0\
+                else 'delivery' if index == 1\
+                else 'price'
+            title_topics.append(topic)
+    topic_score_dict['title_topics'] = title_topics
     review_scores = defaultdict(float)
     for topic in [_topic for _topic in topic_score_dict.keys()
                   if "_score" in _topic]:
         topic_sentence_score = topic_score_dict[topic]
         topic = topic.split('_')[0]
-        if topic in topic_score_dict.get('title_topics', []):
-            topic_score = ((SENTENCE_WEIGHT * topic_sentence_score) +
-                           (TITLE_WEIGHT * topic_score_dict['title'])) *\
-                          (topic_score_dict["{}_sentence_count".format(topic)] /
-                           topic_score_dict['total_sentence_count'])
+        if topic == 'general':
+            topic_score = topic_sentence_score / \
+                topic_score_dict['total_sentence_count']
+            if topic_score > 10:
+                topic_score = 10
+            elif topic_score < -10:
+                topic_score = -10
         else:
-            topic_score = (SENTENCE_WEIGHT * topic_sentence_score) *\
-                          (topic_score_dict["{}_sentence_count".format(topic)] /
-                           topic_score_dict['total_sentence_count'])
+            factor = (topic_score_dict["{}_sentence_count".format(topic)] /
+                      topic_score_dict['total_sentence_count'])
+            if topic in topic_score_dict.get('title_topics', []):
+                topic_score = ((SENTENCE_WEIGHT * topic_sentence_score) +
+                               (TITLE_WEIGHT * topic_score_dict['title'])) \
+                              * factor
+            else:
+                topic_score = (SENTENCE_WEIGHT * topic_sentence_score)\
+                              * factor
         review_scores[topic] = topic_score
     return review_scores
 
 
-def get_ratings_for_company(reviews):
+def ratings_for_company(reviews):
     """
 
-    ??
+    Calculating sentiment score for all reviews in a company,
+    and return a dict containing the values.
 
     :param reviews: list of reviews for a company
     :type reviews: list
-    :returns: ??
+    :returns: dict -- topic as key and score as value
     """
-    review_scores = map(__review_topic_and_score, reviews)
-    for review_score in review_scores:
-        pass
+
+    scores = defaultdict(list)
+    for review in reviews:
+        for key, value in __review_topic_and_score(review):
+            scores[key].append(value)
+    return scores

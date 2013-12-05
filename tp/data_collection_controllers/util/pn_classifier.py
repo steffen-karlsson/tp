@@ -63,7 +63,7 @@ class MultiTopicClassifier(object):
         with open(filename, 'r') as training_file:
             for _line in training_file.readlines():
                 word_list = []
-                sentence = decode(_line.split('\t')[0],'utf-8')
+                sentence = decode(_line.split('\t')[0], 'utf-8')
                 for word in wordpunct_tokenize(sentence):
                     word = encode(word, 'utf-8').translate(None, punctuation)
                     if word:
@@ -127,6 +127,11 @@ class MultiTopicClassifier(object):
         :returns: list -- boolean for each classifier.
         """
         text = wordpunct_tokenize(text)
+        for _ in enumerate(text):
+            word = text.pop(0)
+            word = word.translate(None, punctuation)
+            if word:
+                text.append(word.lower())
         text = [self.__sentence_features(text, all_words)
                 for all_words in self._all_words_lists]
         for index, classifier in enumerate(self._classifiers):
