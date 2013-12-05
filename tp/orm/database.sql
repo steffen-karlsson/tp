@@ -148,6 +148,6 @@ CREATE TABLE IF NOT EXISTS `tp`.`job` (
   `status` VARCHAR(45) NOT NULL,
   `start_time` INT NOT NULL,
   `target` INT NOT NULL,
-  `type` ENUM('category', 'company') NOT NULL,
+  `type` ENUM('category', 'company', 'rating') NOT NULL,
   PRIMARY KEY (`job_id`))
 ENGINE = InnoDB;

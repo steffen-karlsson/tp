@@ -157,6 +157,7 @@ class Rating(BaseModel):
     """
     Data class for Rating object referring to `tp.rating` in the database
     """
+    rating = PrimaryKeyField(db_column='rating_id')
     company = ForeignKeyField(db_column='company_id', rel_model=Company)
     created_at = IntegerField()
     group = CharField()
