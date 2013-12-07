@@ -21,6 +21,8 @@ from tp.data_collection_controllers.util.data_processor \
     import ratings_for_company
 from tp.data_collection_controllers.util.helpers import to_utc_timstamp, now
 from numpy import mean
+from tp.logging.logger import get_logger as log
+from settings import DEBUG
 
 TP_BASEURL = 'http://www.trustpilot.dk'
 CATEGORY_AJAX_URL = "{}/categories/ajaxresults".format(TP_BASEURL)
@@ -82,6 +84,8 @@ def reviews_for_company(company):
         try:
             __url = __get_review_url(company.domain_name.encode('utf-8'),
                                      page=page_count)
+            if DEBUG:
+                log().debug("URL: {}".format(__url))
             __response = download(__url)
             # If its the first page, the use the custom parser,
             # which is paring the review count and the tp score,
@@ -109,6 +113,9 @@ def reviews_for_company(company):
             if reviews:
                 for review in reviews:
                     if __save_review(review, company, update_time):
+                        if DEBUG:
+                            log().debug("Review for company: {} " +
+                                        "has been saved".format(company.domain_name))
                         # If save review return true, means that
                         # the review count should be decreased
                         review_count -= 1
@@ -119,8 +126,10 @@ def reviews_for_company(company):
             else:
                 # No more reviews
                 return
-        except DownloadFailError:
-            #todo: handle DownloadFailError
+        except DownloadFailError, e:
+            log().error("DownloadFailError - reviews_for_company")
+            if DEBUG:
+                log().debug(str(e))
             pass
 
 
@@ -147,13 +156,18 @@ def companies_for_category(category):
             companies = __parsed_data.get('companies', {})
             for company in companies:
                 __save_company(company, category)
+                if DEBUG:
+                    log().debug("Company: {} " +
+                                "has been saved".format(company.domain_name))
             # If len of categories is less than 20, means we reached
             # last "page" in the category
             if len(companies) < COMPANIES_PER_PAGE:
                 break
             page_count += 1
-        except DownloadFailError:
-            #todo: handle DownloadFailError
+        except DownloadFailError, e:
+            log().error("DownloadFailError - companies_for_category")
+            if DEBUG:
+                log().debug(str(e))
             pass
 
 

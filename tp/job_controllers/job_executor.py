@@ -5,7 +5,7 @@
 
 """
 
-from tp.orm.models import Job, Category, Company, Review
+from tp.orm.models import Job, Category, Company
 from tp.data_collection_controllers.util.helpers import to_utc_timstamp, now
 from tp.data_collection_controllers.data_collector \
     import companies_for_category
@@ -16,6 +16,7 @@ from tp.data_collection_controllers.data_collector \
 from tp.job_controllers import IN_QUEUE, EXECUTING, TERMINATED
 from tp.job_controllers import TYPE_CATEGORY, TYPE_COMPANY, TYPE_RATING
 from peewee import DoesNotExist
+from tp.logging.logger import get_logger as log
 
 
 class JobTypeNotFoundException(Exception):
@@ -65,21 +66,30 @@ def __execute_job(job):
     :param job: a Job which is ready to be executed
     :type job: Job
     """
+
     _type = job.type
     if _type == TYPE_CATEGORY:
         category_id = job.target
         category = Category.get(Category.category == category_id)
+        log().info("Starting category job for {} " +
+                   "with id {}.".format(category.name, category_id))
         companies_for_category(category)
     elif _type == TYPE_COMPANY:
         company_id = job.target
         company = Company.get(Company.company == company_id)
+        log().info("Starting company job for {} " +
+                   "with id {}.".format(company.domain_name, company_id))
         reviews_for_company(company)
     elif _type == TYPE_RATING:
         company_id = job.target
+        log().info("Starting rating job for company  " +
+                   "with id {}.".format(company_id))
         rating_for_company(company_id)
     else:
+        log().error("JobTypeNotFoundException for job type: {}.".format(_type))
         raise JobTypeNotFoundException()
 
+    log().info("Job completed")
     #Updating status to terminated
     job.status = TERMINATED
     job.save()
