@@ -7,7 +7,7 @@
 """
 
 from tp.job_controllers import TERMINATED
-from tp.job_controllers import MIN_START_TIME, MAX_START_TIME, JOBS_PER_HOUR
+from settings import MIN_START_TIME, MAX_START_TIME, JOBS_PER_HOUR
 from tp.orm.models import Job
 from time import time
 from datetime import datetime, timedelta
