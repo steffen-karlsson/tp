@@ -6,6 +6,7 @@
 """
 
 from string import digits
+from codecs import open
 from re import split as resplit
 from re import sub as resub
 from collections import defaultdict
@@ -45,7 +46,7 @@ AFINN_PATH = 'tp/data_collection_controllers/util/afinn.txt'
 if path.isfile(AFINN_PATH):
     AFINN = {k: int(v.strip()) for k, v in
              [line.split('\t') for line
-              in open(AFINN_PATH, 'r').readlines()
+              in open(AFINN_PATH, 'r', 'utf-8').readlines()
               if not line.startswith('#')]}
 
 
@@ -120,6 +121,8 @@ def __review_topic_and_score(review):
     :type review: Review
     :returns: float -- sentiment score for the sentence
     """
+    review.content = review.content.strip()
+    review.title = review.title.strip()
     sentences = resplit(PATTERN, review.content)
     topic_score_dict = defaultdict(float)
     for sentence in sentences:
