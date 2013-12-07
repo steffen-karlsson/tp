@@ -82,7 +82,7 @@ def reviews_for_company(company):
     __html_parser = _create_review_parser()
     # Looping until the review count is 0. Decreasing by number of review
     # At the page pr round.
-    while review_count >= 0:
+    while review_count > 0:
         try:
             __url = __get_review_url(company.domain_name.encode('utf-8'),
                                      page=page_count)
