@@ -43,10 +43,10 @@ function generateHTML(status, rma_score, price_score, delivery_score, general_sc
         $html += generateScores(rma_score, price_score, delivery_score, general_score);
         break;
       case 20:
-        $html += errorMessage(", da firmaet ikke er blevet indekseret.");
+        $html += errorMessage(", da firmaets anmeldelser ikke er blevet læst.");
         break;
       case 21:
-        $html += errorMessage(", da firmaets anmeldelser ikke er blevet læst.");
+        $html += errorMessage(", da firmaet ikke er blevet indekseret.");
         break;
       default:
         $html += errorMessage(", da der er sket en ukendt fejl.");
