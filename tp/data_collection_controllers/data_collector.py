@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+.. module:: data_collector
+
+"""
 
 from tp.orm.models import Company, Review, User
 from tp.orm.models import Rating, CompanyCategory, CategoryPosition
@@ -27,16 +31,43 @@ COMPANIES_PER_PAGE = 20
 
 
 def __get_review_url(company_address, page=None):
+    """
+
+    :param company_address: the domain name for the company
+    :type company_address: string
+    :param page: page number for the ajax call
+    :type page: int
+    :returns: string -- complete url for the ajax call for the company
+    """
     return '{}?page={}'.format(company_address, 1 if page is None else page)
 
 
 def __get_category_url(category_id, page):
+    """
+
+    :param category_id:
+    :type category_id: int
+    :param page: page number for the ajax call
+    :type page: int
+    :returns: string -- complete url for the ajax call for the category
+    """
     return '{}?id={}&page={}'.format(CATEGORY_AJAX_URL,
                                      category_id,
                                      page)
 
 
 def reviews_for_company(company):
+    """
+
+    Function for iterating through the different pages of review for a company,
+    using the AJAX being executed already on the web page.
+    This function is besides saving the review for a company, also saving the
+    rating for the company and the user who wrote the review.
+
+    :param company:
+    :type company: Company
+    """
+
     utc_now = to_utc_timstamp(now())
     update_time = company.reviews_updated_at
     Company.update(reviews_updated_at=utc_now).where(
@@ -94,6 +125,14 @@ def reviews_for_company(company):
 
 
 def companies_for_category(category):
+    """
+
+    Function for iterating through and saving all the companies in a category.
+
+    :param category:
+    :type category: Category
+    """
+
     page_count = 1
     __html_parser = _create_category_parser()
     while True:
@@ -119,6 +158,15 @@ def companies_for_category(category):
 
 
 def rating_for_company(company_id):
+    """
+
+    Function for calculating and saving the rating and topics for a company,
+    based on sentiment analysis and MultiTopicClassifier.
+
+    :param company_id:
+    :type company_id: int
+    """
+
     reviews = Review.select(Review.company).where(
         Review.company == company_id)
     ratings = ratings_for_company(reviews)
@@ -131,6 +179,19 @@ def rating_for_company(company_id):
 
 
 def __save_review(data, company, update_time):
+    """
+
+    Local helper function to save a review, used by reviews_for_company.
+
+    :param data: Containing information about the review
+    :type data: dict
+    :param company: the company which the review belongs to
+    :type company: Company
+    :param update_time: indication if the review has been saved before
+    :type update_time: int
+    :returns: Boolean -- indicating if the review is saved or not
+    """
+
     created_at = str(data['created_at']).split('.')[0]
     tp_review_id = data['tp_review_id']
     local_unixtimestamp = datetime.strptime(
@@ -155,6 +216,15 @@ def __save_review(data, company, update_time):
 
 
 def __save_user(data):
+    """
+
+    Local helper function to save a user, used by reviews_for_company.
+
+    :param data: Containing information about the user
+    :type data: dict
+    :returns: User -- the user which just has been saved
+    """
+
     review_count = int(data['review_count'].split()[0])
     #name = data['author']
     #todo: name used to find gender of user
@@ -165,6 +235,15 @@ def __save_user(data):
 
 
 def __save_company(data, category):
+    """
+
+    Local helper function to save a company, used by companies_for_category.
+
+    :param data: Containing information about the company
+    :type data: dict
+    :param category: the category which the company belongs to
+    :type category: Category
+    """
     domain_name = TP_BASEURL + data['url']
     try:
         company = Company.get(Company.domain_name == domain_name)
