@@ -19,7 +19,7 @@ def create_job_for_company_rating():
     """
 
     for company in Company.select():
-        if Review.select(Review.company).where(
+        if Review.select().where(
                 Review.company == company.company).count() > 0:
             #todo: maybe set another threshold than 0
             start_time = generate_starttime()
