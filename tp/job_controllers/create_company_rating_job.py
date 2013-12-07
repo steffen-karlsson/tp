@@ -28,7 +28,7 @@ def create_job_for_company_rating():
                 target=company.company,
                 type=TYPE_RATING).save()
         else:
-            log().info("The company {}'s number of reviews doesn't "
+            log().info(u"The company {}'s number of reviews doesn't "
                        "meet the threshold".format(company.domain_name))
 
 if __name__ == '__main__':

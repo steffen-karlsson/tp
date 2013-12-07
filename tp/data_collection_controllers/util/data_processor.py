@@ -120,7 +120,7 @@ def __review_topic_and_score(review):
     :type review: Review
     :returns: float -- sentiment score for the sentence
     """
-    sentences = resplit(PATTERN, str(review.content))
+    sentences = resplit(PATTERN, review.content)
     topic_score_dict = defaultdict(float)
     for sentence in sentences:
         # for each sentence which is not empty, calculate
