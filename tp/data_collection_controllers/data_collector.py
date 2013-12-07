@@ -37,7 +37,7 @@ def __get_review_url(company_address, page=None):
     :type company_address: string
     :param page: page number for the ajax call
     :type page: int
-    :returns: string -- complete url for the ajax call for the company
+    :returns: str -- complete url for the ajax call for the company
     """
     return '{}?page={}'.format(company_address, 1 if page is None else page)
 
@@ -49,7 +49,7 @@ def __get_category_url(category_id, page):
     :type category_id: int
     :param page: page number for the ajax call
     :type page: int
-    :returns: string -- complete url for the ajax call for the category
+    :returns: str -- complete url for the ajax call for the category
     """
     return '{}?id={}&page={}'.format(CATEGORY_AJAX_URL,
                                      category_id,

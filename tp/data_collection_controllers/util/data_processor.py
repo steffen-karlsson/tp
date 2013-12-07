@@ -12,6 +12,7 @@ from os import path
 from tp.data_collection_controllers.util.pn_classifier \
     import MultiTopicClassifier
 
+
 PATTERN = "<br>|\.[^a-zA-Z<]|\n|!|\?"
 
 TITLE_WEIGHT = 0.3
@@ -47,7 +48,7 @@ def __word_process(word):
     """
 
     :param word: word to be processed
-    :type word: string
+    :type word: str
     :returns: string -- striped, lower-cased and digits removed word.
     """
     # Removing punctuation, digits and lower-casing
@@ -65,7 +66,7 @@ def __pn_sentiment_score(sentence):
     and accumulate all scores.
 
     :param sentence: the sentence which needs to be ranked
-    :type sentence: string
+    :type sentence: str
     :returns: float -- sentiment score for the sentence
     """
     # Returning the total sum of the sentence based on AFINN scores.
@@ -163,6 +164,8 @@ def __review_topic_and_score(review):
             else:
                 topic_score = (SENTENCE_WEIGHT * topic_sentence_score)\
                               * factor
+        # Convert from -10/10 to 0-100 due to the progress bars.
+        topic_score = (topic_score + 10) * 5
         review_scores[topic] = topic_score
     return review_scores
 

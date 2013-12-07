@@ -15,7 +15,7 @@ def download(url):
     if the response code is 200 else a DownloadFailError exception.
 
     :param url: the url to be downloaded
-    :type url: string
+    :type url: str
     :raises: DownloadFailError
     :returns: HTML response object
     """
