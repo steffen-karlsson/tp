@@ -6,11 +6,12 @@
 
 """
 
-from tp.job_controllers import TERMINATED
-from settings import MIN_START_TIME, MAX_START_TIME, JOBS_PER_HOUR
-from tp.orm.models import Job
 from time import time
 from datetime import datetime, timedelta
+
+from tp.job_controllers import TERMINATED
+from tp.settings import MIN_START_TIME, MAX_START_TIME, JOBS_PER_HOUR
+from tp.orm.models import Job
 
 JOB_FREQUENCY = 60 * 60 / JOBS_PER_HOUR
 

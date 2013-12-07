@@ -5,10 +5,13 @@
 
 """
 
+from datetime import datetime
+
+from peewee import DoesNotExist
+from numpy import mean
+
 from tp.orm.models import Company, Review, User
 from tp.orm.models import Rating, CompanyCategory, CategoryPosition
-from datetime import datetime
-from peewee import DoesNotExist
 from tp.data_collection_controllers.util.downloader import download
 from tp.data_collection_controllers.util.downloader import DownloadFailError
 from tp.data_collection_controllers.parser_factory \
@@ -20,9 +23,8 @@ from tp.data_collection_controllers.parser_factory \
 from tp.data_collection_controllers.util.data_processor \
     import ratings_for_company
 from tp.data_collection_controllers.util.helpers import to_utc_timstamp, now
-from numpy import mean
 from tp.logging.logger import get_logger as log
-from settings import DEBUG
+from tp.settings import DEBUG
 
 TP_BASEURL = 'http://www.trustpilot.dk'
 CATEGORY_AJAX_URL = "{}/categories/ajaxresults".format(TP_BASEURL)
