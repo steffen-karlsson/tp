@@ -5,7 +5,7 @@
 
 """
 
-from urllib2 import urlopen, Request, quote
+from urllib2 import urlopen, Request, quote, HTTPError
 
 
 def download(url):
@@ -25,9 +25,9 @@ def download(url):
         response = urlopen(req)
         if response.getcode() == 200:
             return response
-    except ValueError:
+    except (ValueError, HTTPError), e:
         pass
-    raise DownloadFailError()
+    raise DownloadFailError(e)
 
 
 class DownloadFailError(Exception):
