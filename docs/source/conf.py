@@ -40,7 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Improving Trustpilot rating system, using datamining and sentiment analysis'
+project = u'Improving Trustpilot\'s rating system with datamining and machine learning'
 copyright = u'2013, Rune Thor Maartensson, Steffen Karlsson'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -183,7 +183,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'ImprovingTrustpilotratingsystemusingdataminingandsentimentanalysis.tex', u'Improving Trustpilot rating system, using datamining and sentiment analysis Documentation',
+  ('index', 'ImprovingTrustpilotratingsystemusingdataminingandsentimentanalysis.tex', u'Improving Trustpilot\'s rating system with datamining and machine learning',
    u'Rune Thor Maartensson, Steffen Karlsson', 'manual'),
 ]
 
