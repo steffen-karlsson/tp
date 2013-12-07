@@ -114,16 +114,23 @@ def reviews_for_company(company):
             # Safety check if there is any reviews
             if reviews:
                 for review in reviews:
-                    if __save_review(review, company, update_time):
-                        if DEBUG:
-                            log().debug("Review for company: {} " +
-                                        "has been saved".format(company.domain_name))
-                        # If save review return true, means that
-                        # the review count should be decreased
-                        review_count -= 1
+                    # If the content is empty the review will not be treated.
+                    # This could mean that the review has been 
+                    # removed from the site.
+                    if review.get('content', None):
+                        if __save_review(review, company, update_time):
+                            if DEBUG:
+                                log().debug("Review for company: {} " +
+                                            "has been saved"\
+                                            .format(company.domain_name))
+                            # If save review return true, means that
+                            # the review count should be decreased
+                            review_count -= 1
+                        else:
+                            # False means that we have the rest of the reviews
+                            return
                     else:
-                        # False means that we have the rest of the reviews
-                        return
+                        review_count -= 1
                 page_count += 1
             else:
                 # No more reviews
@@ -225,7 +232,7 @@ def __save_review(data, company, update_time):
                content=data['content'],
                created_at=created_at,
                rating=data['rating'],
-               title=data['title'],
+               title=data.get('title', ''),
                tp_review=tp_review_id,
                user=user.user).save()
         return True
