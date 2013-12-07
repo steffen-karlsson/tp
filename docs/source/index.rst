@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Improving Trustpilot rating system, using datamining and sentiment analysis's documentation!
-=======================================================================================================
+Documentation
+=============
 
 Contents:
 
