@@ -10,7 +10,9 @@ from nltk import FreqDist, NaiveBayesClassifier, wordpunct_tokenize
 from codecs import decode, encode
 from random import shuffle
 from nltk.corpus import stopwords
-from string import punctuation
+from re import sub as resub
+
+punctuation = r'[!"#\$%&\'\(\)\*\+,-\.\/:;<=>\?@\[\\\]\^_`{\|}~]'
 
 
 class MultiTopicClassifier(object):
@@ -129,7 +131,7 @@ class MultiTopicClassifier(object):
         text = wordpunct_tokenize(text)
         for _ in enumerate(text):
             word = text.pop(0)
-            word = word.translate(None, punctuation)
+            word = resub(punctuation, "", word)
             if word:
                 text.append(word.lower())
         text = [self.__sentence_features(text, all_words)

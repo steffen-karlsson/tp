@@ -183,7 +183,7 @@ def rating_for_company(company_id):
     :type company_id: int
     """
 
-    reviews = Review.select(Review.company).where(
+    reviews = Review.select().where(
         Review.company == company_id)
     ratings = ratings_for_company(reviews)
     for k, v in ratings.items():
