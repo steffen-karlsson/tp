@@ -25,3 +25,16 @@ __pycache__
 .DS_Store
 
 .coverage
+
+*.lol
+*.lot
+*.lof
+*.out
+*.bbl
+*.blg
+*.dvi
+*.pyg
+*.synctex.gz
+*.log
+*.toc
+*.aux
