@@ -7,6 +7,7 @@
 
 from string import digits
 from re import split as resplit
+from re import sub as resub
 from collections import defaultdict
 from os import path
 from tp.data_collection_controllers.util.pn_classifier \
@@ -18,12 +19,15 @@ PATTERN = "<br>|\.[^a-zA-Z<]|\n|!|\?"
 TITLE_WEIGHT = 0.3
 SENTENCE_WEIGHT = 0.7
 
-if path.isfile('trainingset_rma.txt')\
-        and path.isfile('trainingset_levering.txt')\
-        and path.isfile('trainingset_pris.txt'):
-    CLASSIFIER = MultiTopicClassifier().train(['trainingset_rma.txt',
-                                               'trainingset_levering.txt',
-                                               'trainingset_pris.txt'])
+RMA_PATH = 'tp/data_collection_controllers/util/trainingset_rma.txt'
+DELIVERY_PATH = 'tp/data_collection_controllers/util/trainingset_levering.txt'
+PRICE_PATH = 'tp/data_collection_controllers/util/trainingset_pris.txt'
+if path.isfile(RMA_PATH)\
+        and path.isfile(DELIVERY_PATH)\
+        and path.isfile(PRICE_PATH):
+    CLASSIFIER = MultiTopicClassifier().train([RMA_PATH,
+                                               DELIVERY_PATH,
+                                               PRICE_PATH])
 
 NEGATION_WORDS = {'ingen', 'ikke', 'intet', 'aldrig'}
 AMPLIFICATION_WORDS = dict({'utrolig': 1.2,
@@ -37,10 +41,11 @@ AMPLIFICATION_WORDS = dict({'utrolig': 1.2,
 
 # Converting AFINN wordlist to dictionary with word as key
 # and happiness score as value
-if path.isfile('afinn.txt'):
+AFINN_PATH = 'tp/data_collection_controllers/util/afinn.txt'
+if path.isfile(AFINN_PATH):
     AFINN = {k: int(v.strip()) for k, v in
              [line.split('\t') for line
-              in open('afinn.txt', 'r').readlines()
+              in open(AFINN_PATH, 'r').readlines()
               if not line.startswith('#')]}
 
 
@@ -51,8 +56,8 @@ def __word_process(word):
     :type word: str
     :returns: string -- striped, lower-cased and digits removed word.
     """
-    # Removing punctuation, digits and lower-casing
-    return word.translate(None, digits) \
+    # Removing digits and lower-casing
+    return resub(digits, "", word) \
         .strip() \
         .lower()
 
@@ -115,7 +120,7 @@ def __review_topic_and_score(review):
     :type review: Review
     :returns: float -- sentiment score for the sentence
     """
-    sentences = resplit(PATTERN, review.content)
+    sentences = resplit(PATTERN, str(review.content))
     topic_score_dict = defaultdict(float)
     for sentence in sentences:
         # for each sentence which is not empty, calculate
@@ -183,6 +188,6 @@ def ratings_for_company(reviews):
 
     scores = defaultdict(list)
     for review in reviews:
-        for key, value in __review_topic_and_score(review):
+        for key, value in __review_topic_and_score(review).items():
             scores[key].append(value)
     return scores
