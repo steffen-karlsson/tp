@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS `tp`.`category_position` (
   `company_category_id` INT NOT NULL,
   `created_at` INT NOT NULL,
   `position` INT NOT NULL,
-  `group` ENUM('general', 'rma', 'price', 'delivery') NOT NULL,
+  `group` ENUM('general', 'tp', 'rma', 'price', 'delivery') NOT NULL,
   PRIMARY KEY (`company_category_id`, `created_at`),
   CONSTRAINT `fk_category_position_category1`
     FOREIGN KEY (`company_category_id`)
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS `tp`.`rating` (
   `company_id` INT NOT NULL,
   `created_at` INT NOT NULL,
   `value` FLOAT NOT NULL,
-  `group` ENUM('general', 'rma', 'price', 'delivery') NOT NULL,
+  `group` ENUM('general', 'tp', 'rma', 'price', 'delivery') NOT NULL,
   PRIMARY KEY (`rating_id`),
   CONSTRAINT `fk_rating_company1`
     FOREIGN KEY (`company_id`)
