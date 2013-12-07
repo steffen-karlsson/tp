@@ -65,11 +65,9 @@ def _create_review_parser_first():
     """
     parsing_pattern = __create_review_parser_pattern()
     parsing_pattern.extend([{
-                            'tag':'meta',
+                            'tag':'span',
                             'attributes':('itemprop', 'reviewCount'),
-                            'return_attributes':['content'],
-                            'attribute_target_name':'review_count',
-                            'tag_target_name':'review_count',
+                            'data_target_name':'review_count',
                         },
                         {
                             'tag':'span',
