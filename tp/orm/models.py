@@ -10,10 +10,14 @@ which is being used in this project.
 
 from peewee import MySQLDatabase, Model, PrimaryKeyField, ForeignKeyField
 from peewee import IntegerField, CharField, TextField, FloatField
+from settings import DATABASE_HOST, DATABASE_PORT, DATABASE_NAME
+from settings import DATABASE_USERNAME, DATABASE_PASSWORD
 
-
-DB = MySQLDatabase('tp', **{'passwd': 'SKAjdlkwq3nsjd3if993',
-                            'user': 'tp'})
+DB = MySQLDatabase(DATABASE_NAME,
+                   host=DATABASE_HOST,
+                   port=DATABASE_PORT,
+                   user=DATABASE_USERNAME,
+                   passwd=DATABASE_PASSWORD)
 
 
 class UnknownFieldType(object):
