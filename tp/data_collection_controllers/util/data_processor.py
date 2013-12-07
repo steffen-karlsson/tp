@@ -103,10 +103,10 @@ def __pn_sentiment_score(sentence):
                 negation_factor = 1
         last_word = word
 
-    if total_score > 10:
-        total_score = 10
-    elif total_score < -10:
-        total_score = -10
+    if total_score > 5:
+        total_score = 5
+    elif total_score < -5:
+        total_score = -5
     return total_score
 
 
@@ -158,22 +158,25 @@ def __review_topic_and_score(review):
         if topic == 'general':
             topic_score = topic_sentence_score / \
                 topic_score_dict['total_sentence_count']
-            if topic_score > 10:
-                topic_score = 10
-            elif topic_score < -10:
-                topic_score = -10
+            if topic_score > 5:
+                topic_score = 5
+            elif topic_score < -5:
+                topic_score = -5
         else:
-            factor = (topic_score_dict["{}_sentence_count".format(topic)] /
-                      topic_score_dict['total_sentence_count'])
+            sentence_count = topic_score_dict["{}_sentence_count".format(topic)]
             if topic in topic_score_dict.get('title_topics', []):
                 topic_score = ((SENTENCE_WEIGHT * topic_sentence_score) +
-                               (TITLE_WEIGHT * topic_score_dict['title'])) \
-                              * factor
+                               (TITLE_WEIGHT * topic_score_dict['title'])) / \
+                              sentence_count
             else:
-                topic_score = (SENTENCE_WEIGHT * topic_sentence_score)\
-                              * factor
-        # Convert from -10/10 to 0-100 due to the progress bars.
-        topic_score = (topic_score + 10) * 5
+                topic_score = (SENTENCE_WEIGHT * topic_sentence_score)  / \
+                              sentence_count
+        # convert from -5/5 to 0-100 due to the progress bars.
+        topic_score = (topic_score + 5) * 10
+        # boosting score depending on number of stars
+        topic_score = topic_score * (0.125*float(review.rating)+0.625)
+        if topic_score > 100:
+            topic_score = 100
         review_scores[topic] = topic_score
     return review_scores
 
