@@ -12,7 +12,7 @@
 	        Allow from all
 	</Directory>
 
-        Alias /sphinx /home/$usre/tp_project/tp/docs/build/html/
+        Alias /sphinx /home/$user/tp_project/tp/docs/build/html/
         <Directory /home/$user/tp_project/tp/docs/build/html>
                 Order deny,allow
                 Allow from all
