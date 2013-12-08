@@ -33,21 +33,21 @@ As the purpose of this project is to improve the rating system of a website, it 
 The system requires a web server, for this we use \href{http://httpd.apache.org/}{\texttt{Apache HTTP Server}}, as it is relatively easy to setup when using Linux. As the system needs to store data such as the differentiated ratings, a database is necessary, for which we use \href{http://www.mysql.com/}{\texttt{MySQL}}.
 
 As the project is part of the course \href{http://www.kurser.dtu.dk/02819.aspx?menulanguage=en-GB}{02819 Data Mining using Python}, the project is coded in Python and uses language specific libraries.
-\\~
-\\~
-The system acquires data, by scraping Trustpilot's website, for which a framework was created, that extends the functionality of Pythons built-in \href{http://docs.python.org/2/library/htmlparser.html}{\texttt{HTMLParser}}. By using this framework, it is possible to define a parser using a simple syntax - that defines what elements from a HTML page that should be acquired - which improves maintainability, while keeping the performance advantages of using an event driven parser such as HTMLParser. \newline As an event driven parser only iterates over the data once, it provide a performance advantage over other parsers such as \href{http://www.crummy.com/software/BeautifulSoup/}{\texttt{BeautifulSoup}}, which - depending on usage - can iterate over the same data more than once.
-\\~
-\\~
+
+\subsection{Data acquisition}
+The system acquires data, by scraping Trustpilot's website, for which a framework was created, that extends the functionality of Pythons built-in \href{http://docs.python.org/2/library/htmlparser.html}{\texttt{HTMLParser}}. By using this framework, it is possible to define a parser using a simple syntax - that defines what elements from a HTML page that should be acquired - which improves maintainability, while keeping the performance advantages of using an event driven parser such as HTMLParser. As an event driven parser only iterates over the data once, it provide a performance advantage over other parsers such as \href{http://www.crummy.com/software/BeautifulSoup/}{\texttt{BeautifulSoup}}, which - depending on usage - can iterate over the same data more than once.
+
+\subsection{Database}
 To provide an interface to the database, the ORM (Object Relational Mapper) \href{http://peewee.readthedocs.org/en/latest/}{\texttt{peewee}} is used. Peewee provides an easy to use interface between Python and a SQL database, in addition to this it provides protection against the commonly known vulnerability \href{https://www.owasp.org/index.php/Top_10_2013-A1-Injection}{\texttt{SQL injection}}.
-\\~
-\\~
+
+\subsection{Data processing}
 When processing the acquired data, the system has two major components; the first is the multi topic classifier, which helps identifying topics within a review, the second component does sentiment analysis, which provides a positive or negative score for a review based on affective norms from the danish version of the word list AFINN-111\cite{IMM2011-06010}. The multi topic classifier has the ability to train an infinite number of the implementation of \href{http://nltk.org/api/nltk.classify.html#module-nltk.classify.naivebayes}{\texttt{Naïve Bayes classifers}} from nltk, which the system uses to classify review text in different categories.
-\\~
-\\~
+
+\subsection{Website}
+In addition to these components, the system has a simple website, which processes Ajax requests from users and holds the Greasemonkey script, information about the project and a link to the structured documentation generated with \href{http://sphinx-doc.org/}{\texttt{Sphinx}}. The website uses the Python web framework Flask, which helps serve all content while protecting against the known attack vectors \href{https://www.owasp.org/index.php/Cross-site_Scripting_(XSS)}{\texttt{XSS}} and \href{https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)}{\texttt{CSRF}}. The website is created using \href{http://getbootstrap.com/}{\texttt{Bootstrap}} with a slightly modified template from \href{http://bootswatch.com/flatly/}{\texttt{bootswatch.com}}, which makes it easy to design a website.
+
+\subsection{Miscellaneous}
 To allow administrators to use the system, it has a number of administrative scripts. Which makes it possible to create jobs that scrape reviews for a company, scrape companies from a category and compute ratings based on the scraped reviews. Jobs are executed using \href{http://pubs.opengroup.org/onlinepubs/009696699/utilities/crontab.html}{\texttt{cron}} which is a time based job scheduler found in Linux and Unix.
-\\~
-\\~
-In addition to these components, the system has a simple website, which holds the Greasemonkey script, information about the project and a ink to the structured documentation generated with \href{http://sphinx-doc.org/}{\texttt{Sphinx}}. The website uses \href{http://getbootstrap.com/}{\texttt{Bootstrap}} with a slightly modified template from \href{http://bootswatch.com/flatly/}{\texttt{bootswatch.com}}, which makes it easy to design a website.
 \\~
 \\~
 The system is hosted on a micro instance from Amazon EC2, which runs the Debian GNU/Linux distribution. The system is hosted offsite, because it neccesary to keep the system running 24/7 while acquiring data and serving results to users.
