@@ -1,23 +1,22 @@
 <VirtualHost *:80>
-	ServerName	tp.runetm.dk
+	ServerName	tp_project_name
 
-	WSGIDaemonProcess tp user=tp_worker group=tp_worker threads=5 python-path=/home/admin/tp
-	WSGIScriptAlias / /home/admin/tp/tp/tp.wsgi
+	WSGIDaemonProcess tp user=tp_worker group=tp_worker threads=5 python-path=/home/$user/tp_project/tp
+	WSGIScriptAlias / /home/$user/tp_project/tp/tp/tp.wsgi
 
-#	DocumentRoot /var/www/tp
-	Alias /static /home/admin/tp/tp/web/static
-	<Directory /home/admin/tp/tp/>
+	Alias /static /home/$user/tp_project/tp/tp/web/static
+	<Directory /home/$user/tp_project/tp/tp/>
 	        WSGIProcessGroup tp
         	WSGIApplicationGroup %{GLOBAL}
 		Order deny,allow
 	        Allow from all
 	</Directory>
 
-        Alias /sphinx /var/www/html/
-        <Directory /var/www/html>
+        Alias /sphinx /home/$usre/tp_project/tp/docs/build/html/
+        <Directory /home/$user/tp_project/tp/docs/build/html>
                 Order deny,allow
                 Allow from all
         </Directory>
 
-	ErrorLog /home/admin/tp/tp/error.log
+	ErrorLog /home/$user/tp_project/tp/tp/error.log
 </VirtualHost>
