@@ -153,6 +153,7 @@ Figure \ref{fig:classification} show the most informative words, for one of the 
 	\caption{Most informative words for the "Price" topic classifier. \label{fig:classification}}
 \end{figure}
 
+As an example of unit test, the HTML parser module has been tested using this paradigm, and there is 100\% code coverage.
 
 \subsection{Profiling}
 During all parts of the design of this system, the focus has been on functionality as well as performance, as such there have not been any issues related to system performance.
@@ -204,6 +205,7 @@ In this project the multi topic classification improves the applicability of sen
 \appendices
 
 \section{User guide}
+\vspace*{10mm}
 This is a step-by-step guide, how to use the system from a user perspective:
 \begin{enumerate}
 	\item If you are using Firefox install \texttt{Greasemonkey}\cite{GreaseMonkey}, or if you are using Chrome/Chromium and Opera \texttt{Tampermonkey}\cite{TamperMonkey} is available.
@@ -238,5 +240,92 @@ This is a step-by-step guide, how to use the system from a user perspective:
 	\end{itemize}
 \end{enumerate}
 
+\newpage
+\section{Installation guide}
+\vspace*{10mm}
+\begin{description}
+	\item \textbf{Requirements:}  Debian Wheezy/7 - It might work on earlier versions as well and same for Ubuntu, however newer versions uses Apache 2.4, which requires a modification to the vhost.
+\end{description} 
+\vspace*{3mm}
+\begin{enumerate}
+	\item Phase 1 (Install system wide dependencies from apt-get repository and pip):
+	\begin{figure}[h!]
+	\vspace*{-2mm}	
+	\begin{lstlisting}[language=bash]
+		(sudo) apt-get install python-pip mysql-server apache2 python-dev
+		(sudo) apt-get install libapache2-mod-wsgi libmysqlclient-dev
+		(sudo) pip install virtualenv
+	\end{lstlisting}
+	\end{figure}
+	\vspace*{-5mm}
+	\item Phase 2 (Setup virtualenv for project code):
+	\begin{figure}[h!]
+	\vspace*{-2mm}	
+	\begin{lstlisting}[language=bash]
+		# As $user in folder /home/$username/ 
+		# or elsewhere (should not be /var/www)		
+		# Setup virtual environment
+		virtualenv tp_project
+		# Copy files to virtualenv 
+		cp tp/ tp_project/ -R
+		# cd into virtualenv and activate it
+		cd tp_project/
+		source bin/activate
+		# install package dependencies
+		pip install -r required_packages.txt
+	\end{lstlisting}
+	\end{figure}	
+	\vspace*{-5mm}
+	\item Phase 3 (Create database and setup tables):
+	\begin{figure}[h!]
+	\vspace*{-2mm}	
+	\begin{lstlisting}[language=bash]
+		mysql -p -u root < tp/orm/database.sql
+		mysql -p -u root tp < tp/orm/fixtures.sql
+		# OPTIONAL (but highly recommended) create a user for the application.
+		mysql -p -u root
+	\end{lstlisting}
+	\vspace*{-3mm}
+	\begin{lstlisting}[language=SQL]
+		CREATE USER `tp` identified by 'YOURPASSWORDHERE';
+		GRANT SELECT ON tp.* TO `tp`;
+		GRANT INSERT ON tp.* TO `tp`;
+		GRANT UPDATE ON tp.* TO `tp`;
+		GRANT DELETE ON tp.* TO `tp`;
+		GRANT EXECUTE ON tp.* TO `tp`;
+	\end{lstlisting}
+	\vspace*{-3mm}
+	\begin{lstlisting}[language=bash]
+		# Change username and password in settings.py file
+		nano -w /home/$user/tp_project/tp/tp/settings.py
+	\end{lstlisting}
+	\end{figure}		
+	\vspace*{-5mm}
+	\item Phase 4 (point Apache webserver towards application):
+	\begin{figure}[h!]
+	\vspace*{-2mm}	
+	\begin{lstlisting}[language=bash]
+		# Create user tp_worker
+		adduser tp_worker
+		(sudo) cp tp.vhost /etc/apache2/sites-available/
+		# Edit vhost file and edit all instances of $user to actual name 
+		# of the user that runs the system
+		# Optional replace ServerName with something else.
+		(sudo) nano -w /etc/apache2/sites-available/tp.vhost
+		(sudo) a2ensite tp.vhost
+		# Edit Greasemonkey to point towards the url of your system
+		nano -w +60 tp/web/static/gm_script/dfsctp.user.js
+		(sudo) service apache2 restart
+	\end{lstlisting}
+	\end{figure}	
+\end{enumerate}
+
+\newpage
+\section{E/R diagram}
+\vspace*{10mm}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.5]{err_diagram.png}
+\end{figure}
 
 \end{document}
