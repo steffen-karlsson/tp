@@ -135,6 +135,13 @@ However to showcase that the parser framework that was created is faster than Be
 The improvement relative to Beautiful Soup is that it is at least {\color{green} 34.50\%} faster and uses {\color{green} 430\%} less memory.
 
 \section{Discussion}
+As table \ref{fig:scores} shows, the system is able to generate scores, for the categories RMA, price, delivery and general. The first three are differentiated scores, which show how well a company is at handling this category, general is the overall feel of all reviews, which includes the previous three.
+
+As expected all the companies in the table, shows a significantly lower score in the category RMA. Which to our experience is likely attributed to a fact, that users who have a good experience with RMA handling, will not report it, where as users who have a bad experience are more likely to report it.
+
+It should be noted that sentiment analysis in general, is sensitive to irony and lack of affective norms. To mitigate this issue we have implemented words which amplify or negate the value of an affective norm. An example of a word that amplifies another is "very" as in "very good", and for negation "not" as in "not good".
+
+In spite of this most scores are relatively close to the middle, which an increase of training data could help to improve, by increasing the ratio of text that is classifiable.
 
 \section{Conclusion}
 
