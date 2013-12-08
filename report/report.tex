@@ -10,9 +10,9 @@
 \usepackage{float}
 \usepackage{algorithm2e}
 \usepackage{caption}
-
 \hypersetup{colorlinks=true,citecolor=[rgb]{0,0.4,0}}
 
+\definecolor{green}{RGB}{39, 174, 96}
 
 \title{Improving Trustpilot's rating system with datamining and machine learning}
 \author{s094095 Steffen Karlsson \& S093475 Rune Thor Mårtensson}
@@ -86,16 +86,21 @@ During all parts of the design of this system, the focus has been on functionali
 However to showcase that the parser framework that was created is faster than Beautiful Soup, it has been profiled and the results is available in table \ref{fig:profiling}.
 
 \begin{figure}[!h]
+	\vspace*{2mm}
+	\centering
 	\begin{tabular}{ | l | c | c | }
   		\hline
-   		 & \textbf{Beautiful Soup} & \textbf{framework} \\ \hline
-  		Min time & x & x \\ \hline
-  		Max time & x & x \\ \hline
-  		Avg time & x & x \\ \hline
-  		Memory & x & x \\ \hline
+   		 & \textbf{Beautiful Soup} & \textbf{HTML parser framework} \\ \hline
+  		Min time & 0.954 & 0.614 \\ \hline
+  		Max time & 0.971 & 0.636 \\ \hline
+  		Avg time & 0.957 & 0.618 \\ \hline
+  		Memory & 73.676 MiB & 13.887 MiB \\ \hline
 	\end{tabular}
-	\caption{Minimum, maximum and average time plus memory usage between the parser framework and Beautiful Soup. \label{fig:profiling}}
+	\caption{Minimum, maximum and average time (on 1000 iterations) plus memory usage between the parser framework and Beautiful Soup. \label{fig:profiling}}
 \end{figure}
+
+The improvement relative to Beautiful Soup is that it is at least {\color{green} 34.50\%} faster and uses {\color{green} 430\%} less memory.
+
 
 \section{Discussion}
 
