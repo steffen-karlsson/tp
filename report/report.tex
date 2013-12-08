@@ -38,7 +38,7 @@ The system requires a web server, for this we use \href{http://httpd.apache.org/
 As the project is part of the course \href{http://www.kurser.dtu.dk/02819.aspx?menulanguage=en-GB}{02819 Data Mining using Python}, the project is coded in Python and uses language specific libraries.
 
 \subsection{Data acquisition}
-The system acquires data, by scraping Trustpilot's website, for which a framework was created, that extends the functionality of Pythons built-in \href{http://docs.python.org/2/library/htmlparser.html}{\texttt{HTMLParser}}. By using this framework, it is possible to define a parser using a simple syntax - that defines what elements from a HTML page that should be acquired - which improves maintainability, while keeping the performance advantages of using an event driven parser such as HTMLParser. As an event driven parser only iterates over the data once, it provide a performance advantage over other parsers such as \href{http://www.crummy.com/software/BeautifulSoup/}{\texttt{BeautifulSoup}}, which - depending on usage - can iterate over the same data more than once.
+The system acquires data, by scraping Trustpilot's website, for which a framework was created, that extends the functionality of Pythons built-in \href{http://docs.python.org/2/library/htmlparser.html}{\texttt{HTMLParser}}. By using this framework, it is possible to define a parser using a simple syntax - that defines what elements from a HTML page that should be acquired - which improves maintainability, while keeping the performance advantages of using an event driven parser such as HTMLParser. As an event driven parser only iterates over the data once, it provide a performance advantage over other parsers such as \href{http://www.crummy.com/software/BeautifulSoup/}{\texttt{Beautiful Soup}}, which - depending on usage - can iterate over the same data more than once.
 
 \subsection{Database}
 To provide an interface to the database, the ORM (Object Relational Mapper) \href{http://peewee.readthedocs.org/en/latest/}{\texttt{peewee}} is used. Peewee provides an easy to use interface between Python and a SQL database, in addition to this it provides protection against the commonly known vulnerability \href{https://www.owasp.org/index.php/Top_10_2013-A1-Injection}{\texttt{SQL injection}}.
@@ -54,8 +54,6 @@ To allow administrators to use the system, it has a number of administrative scr
 \\~
 \\~
 To help administrative tasks for this system, it implements logging to linux/unix standard logging facility \href{http://tools.ietf.org/html/rfc5424}{\texttt{syslog}}. At the moment it only logs to a local file, but in theory the system could be configured to log to a remote syslog.
-\\~
-\\~
 
 \begin{figure*}[!ht]
 	\vspace*{10mm}
@@ -83,10 +81,23 @@ All code in the system has been checked with \href{http://www.pylint.org/}{\text
 
 
 \subsection{Profiling}
+During all parts of the design of this system, the focus has been on functionality as well as performance, as such there have not been any issues related to system performance.
 
+However to showcase that the parser framework that was created is faster than Beautiful Soup, it has been profiled and the results is available in table \ref{fig:profiling}.
+
+\begin{figure}[!h]
+	\begin{tabular}{ | l | c | c | }
+  		\hline
+   		 & \textbf{Beautiful Soup} & \textbf{framework} \\ \hline
+  		Min time & x & x \\ \hline
+  		Max time & x & x \\ \hline
+  		Avg time & x & x \\ \hline
+  		Memory & x & x \\ \hline
+	\end{tabular}
+	\caption{Minimum, maximum and average time plus memory usage between the parser framework and Beautiful Soup. \label{fig:profiling}}
+\end{figure}
 
 \section{Discussion}
-
 
 \section{Conclusion}
 
