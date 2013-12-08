@@ -78,7 +78,7 @@ To provide an interface to the database, the ORM (Object Relational Mapper) \hre
 	\hspace*{25mm}	
 	\begin{tabular}{ | l | c | c | c | c | r | }
   		\hline
-   		 & \textbf{RMA} & \textbf{Price} & \textbf{Delivery} & \textbf{General} & \textbf{Original} \\ \hline
+   		 & \textbf{RMA} & \textbf{Price} & \textbf{Delivery} & \textbf{General} & \textbf{Original\footnote{Originally in the range 1-10, it has been converted to range 1-100}} \\ \hline
   		\href{http://www.trustpilot.dk/review/www.av-connection.dk}{AV-Connection} & 64.72 & 80.37 & 80.42 & 77.09 & 99 \\ \hline
   		\href{http://www.trustpilot.dk/review/www.conradelektronik.dk}{Conrad Elektronik Danmark} & 52.01 & 69.51 & 69.12 & 65.26 & 68 \\ \hline
   		\href{http://www.trustpilot.dk/review/www.sony.dk}{Sony}  & 45.00 & 49.44 & 55.78 & 50.75 & 29 \\ \hline
@@ -116,7 +116,7 @@ All code in the system has been checked with \href{http://www.pylint.org/}{\text
 \subsection{Profiling}
 During all parts of the design of this system, the focus has been on functionality as well as performance, as such there have not been any issues related to system performance.
 
-However to showcase that the parser framework that was created is faster than Beautiful Soup, it has been profiled and the results is available in table \ref{fig:profiling}.
+However to showcase that the parser framework that was created is faster than Beautiful Soup, it has been profiled for memory consumption using the packages \href{https://pypi.python.org/pypi/memory_profiler}{\texttt{memory_profiler}} and \href{http://code.google.com/p/psutil/}{\texttt{psutil}}, and for execution time with Pythons built-in timeit functionality. The results are available in table \ref{fig:profiling}.
 
 \begin{figure}[!h]
 	\vspace*{2mm}
@@ -132,18 +132,25 @@ However to showcase that the parser framework that was created is faster than Be
 	\caption{Minimum, maximum and average time (on 1000 iterations) plus memory usage between the parser framework and Beautiful Soup. \label{fig:profiling}}
 \end{figure}
 
-The improvement relative to Beautiful Soup is that it is at least {\color{green} 34.50\%} faster and uses {\color{green} 430\%} less memory.
+The improvement relative to Beautiful Soup is that it is at least {\color{green} 34\%} faster and uses {\color{green} 430\%} less memory.
 
 \section{Discussion}
 As table \ref{fig:scores} shows, the system is able to generate scores, for the categories RMA, price, delivery and general. The first three are differentiated scores, which show how well a company is at handling this category, general is the overall feel of all reviews, which includes the previous three.
 
 As expected all the companies in the table, shows a significantly lower score in the category RMA. Which to our experience is likely attributed to a fact, that users who have a good experience with RMA handling, will not report it, where as users who have a bad experience are more likely to report it.
-
+\\~
+\\~
 It should be noted that sentiment analysis in general, is sensitive to irony and lack of affective norms. To mitigate this issue we have implemented words which amplify or negate the value of an affective norm. An example of a word that amplifies another is "very" as in "very good", and for negation "not" as in "not good".
 
-In spite of this most scores are relatively close to the middle, which an increase of training data could help to improve, by increasing the ratio of text that is classifiable.
+In spite of it is always possible to improve the system, by increasing the amount of training data available for the multi topic classifier, which should increase the ratio of text that is classifiable.
+\\~
+\\~
+The scores the system is able to generate, are not necessarily a mirror of the score that Trustpilot, has as overall score for the company. An example of this could be \href{http://www.trustpilot.dk/review/www.av-connection.dk}{AV-Connection}, where the score from Trustpilot is 9.9 out of 10, where it shows from the result that the store is significantly worse at handling RMA, compared to the other categories. 
 
 \section{Conclusion}
+We have accomplished in creating a system, which is able to compute differentiated scores for companies. 
+
+The gamble that we took, by spending time on creating our own HTML parser framework paid off, it uses significantly less amount of memory as well as being at least 34\% faster.
 
 \bibliographystyle{IEEEtran}
 \bibliography{References}
