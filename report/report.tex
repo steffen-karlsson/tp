@@ -29,21 +29,10 @@ An example would be a customer writing a review, which only has information abou
 By reading reviews and classifying the rating as something that is only related to delivery time, it is possible to make a differentiated rating, which this project achieves by using topic classification and sentiment analysis.
 
 \section{Methods}
-As the purpose of this project is to improve the rating system of a website, it makes sense to extend its functionality. This is achieved by using a \texttt{Greasemonkey} script and an accompanying website which the script can acquire data from using \texttt{Ajax}.
-The system requires a webserver, for this we use \texttt{Apache HTTP Server}, as it is relatively easy to setup when using Linux. As the system needs to store data such as the differentiated ratings, a database is necessary, for which we use MySQL.
-As the project is part of the course \href{\url{http://www.kurser.dtu.dk/02819.aspx?menulanguage=en-GB}}{02819 Data Mining using Python}, the project is coded in Python and uses language specific libraries.
+As the purpose of this project is to improve the rating system of a website, it makes sense to extend its functionality. This is achieved by using a \texttt{Greasemonkey}\cite{GreaseMonkey} script and an accompanying website which the script can acquire data from using \href{http://en.wikipedia.org/wiki/Ajax_(programming)}{\texttt{Ajax}}.
+The system requires a web server, for this we use \href{http://httpd.apache.org/}{\texttt{Apache HTTP Server}}, as it is relatively easy to setup when using Linux. As the system needs to store data such as the differentiated ratings, a database is necessary, for which we use \href{http://www.mysql.com/}{\texttt{MySQL}}.
 
-
-
-The system is composed of the following components:
-Webservice (Ajax, frontpage)
-A greasemonkey script
-Scraper components - data collection
-Process data components
-Administrative scripts
-
-Implementation details
-apache + mysql + python components
+As the project is part of the course \href{http://www.kurser.dtu.dk/02819.aspx?menulanguage=en-GB}{02819 Data Mining using Python}, the project is coded in Python and uses language specific libraries.
 
 \section{Results}
 
@@ -62,5 +51,7 @@ apache + mysql + python components
 
 \section{Conclusion}
 
+\bibliographystyle{IEEEtran}
+\bibliography{References}
 
 \end{document}
