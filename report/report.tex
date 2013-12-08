@@ -8,7 +8,7 @@
 \usepackage[table]{xcolor}
 \usepackage{pdfpages}
 \usepackage{float}
-\usepackage{algorithm2e}
+\usepackage[boxed]{algorithm2e}
 \usepackage{caption}
 \hypersetup{colorlinks=true,citecolor=[rgb]{0,0.4,0}}
 
@@ -43,17 +43,35 @@ The system acquires data, by scraping Trustpilot's website, for which a framewor
 \subsection{Database}
 To provide an interface to the database, the ORM (Object Relational Mapper) \href{http://peewee.readthedocs.org/en/latest/}{\texttt{peewee}} is used. Peewee provides an easy to use interface between Python and a SQL database, in addition to this it provides protection against the commonly known vulnerability \href{https://www.owasp.org/index.php/Top_10_2013-A1-Injection}{\texttt{SQL injection}}.
 
-\subsection{Data processing}
-When processing the acquired data, the system has two major components; the first is the multi topic classifier, which helps identifying topics within a review, the second component does sentiment analysis, which provides a positive or negative score for a review based on affective norms from the danish version of the word list AFINN-111\cite{IMM2011-06010}. The multi topic classifier has the ability to train an infinite number of the implementation of \href{http://nltk.org/api/nltk.classify.html#module-nltk.classify.naivebayes}{\texttt{Naïve Bayes classifers}} from nltk, which the system uses to classify review text in different categories.
-
-\subsection{Website}
-In addition to these components, the system has a simple website, which processes Ajax requests from users and holds the Greasemonkey script, information about the project and a link to the structured documentation generated with \href{http://sphinx-doc.org/}{\texttt{Sphinx}}. The website uses the Python web framework Flask, which helps serve all content while protecting against the known attack vectors \href{https://www.owasp.org/index.php/Cross-site_Scripting_(XSS)}{\texttt{XSS}} and \href{https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)}{\texttt{CSRF}}. The website is created using \href{http://getbootstrap.com/}{\texttt{Bootstrap}} with a slightly modified template from \href{http://bootswatch.com/flatly/}{\texttt{bootswatch.com}}, which makes it easy to design a website.
-
-\subsection{Miscellaneous}
-To allow administrators to use the system, it has a number of administrative scripts. Which makes it possible to create jobs that scrape reviews for a company, scrape companies from a category and compute ratings based on the scraped reviews. Jobs are executed using \href{http://pubs.opengroup.org/onlinepubs/009696699/utilities/crontab.html}{\texttt{cron}} which is a time based job scheduler found in Linux and Unix.
-\\~
-\\~
-To help administrative tasks for this system, it implements logging to linux/unix standard logging facility \href{http://tools.ietf.org/html/rfc5424}{\texttt{syslog}}. At the moment it only logs to a local file, but in theory the system could be configured to log to a remote syslog.
+\begin{algorithm}[h!]
+	\KwData{review}
+ 	\KwResult{differentiated scores for the review}
+	\For{sentences in review}{
+		total sentence count += 1\\
+		score = calculate sentiment score\\
+		topics = classify sentence\\
+		general score += score\\
+		\For{topic in topics}{
+			topic score += score\\
+			topic sentence count += 1
+		}
+		title topics = classify title\\
+		title score = calculate sentiment score\\
+		\For{topic in topics}{
+			\eIf{topic is general}{
+				topic score /= total sentence count
+   			}{
+  				\eIf{topic is in title topics}{
+					topic score = (0.7 * topic score + 0.3 * title score) / topic sentence count
+   				}{
+  					topic score = (0.7 * topic score) / topic sentence count
+  				}
+  			}
+  			add topic and score to differentiated score 		
+		}
+	} 	
+\caption{Calculate differentiated scores for a review \label{alg:differentiated}}
+\end{algorithm}
 
 \begin{figure*}[!ht]
 	\vspace*{10mm}
@@ -68,6 +86,21 @@ To help administrative tasks for this system, it implements logging to linux/uni
 	\hspace*{30mm}	
 	\caption{Computed and original scores for three companies. \label{fig:scores}}
 \end{figure*}
+
+\subsection{Data processing}
+When processing the acquired data, the system has two major components; the first is the multi topic classifier, which helps identifying topics within a review, the second component does sentiment analysis, which provides a positive or negative score for a review based on affective norms from the danish version of the word list AFINN-111\cite{IMM2011-06010}. The multi topic classifier has the ability to train an infinite number of the implementation of \href{http://nltk.org/api/nltk.classify.html#module-nltk.classify.naivebayes}{\texttt{Naïve Bayes classifers}} from nltk, which the system uses to classify review text in different categories.
+\\~
+\\~
+To calculate the differentiated scores for a company, which is the aim of the project, it is necessary to calculate differentiated scores for every review. To do this the multi topic classifier and sentiment analysis is used in an algorithm, which has been created and the pesudo code is available at Algorithm \ref{alg:differentiated}.
+
+\subsection{Website}
+In addition to these components, the system has a simple website, which processes Ajax requests from users and holds the Greasemonkey script, information about the project and a link to the structured documentation generated with \href{http://sphinx-doc.org/}{\texttt{Sphinx}}. The website uses the Python web framework Flask, which helps serve all content while protecting against the known attack vectors \href{https://www.owasp.org/index.php/Cross-site_Scripting_(XSS)}{\texttt{XSS}} and \href{https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)}{\texttt{CSRF}}. The website is created using \href{http://getbootstrap.com/}{\texttt{Bootstrap}} with a slightly modified template from \href{http://bootswatch.com/flatly/}{\texttt{bootswatch.com}}, which makes it easy to design a website.
+
+\subsection{Miscellaneous}
+To allow administrators to use the system, it has a number of administrative scripts. Which makes it possible to create jobs that scrape reviews for a company, scrape companies from a category and compute ratings based on the scraped reviews. Jobs are executed using \href{http://pubs.opengroup.org/onlinepubs/009696699/utilities/crontab.html}{\texttt{cron}} which is a time based job scheduler found in Linux and Unix.
+\\~
+\\~
+To help administrative tasks for this system, it implements logging to linux/unix standard logging facility \href{http://tools.ietf.org/html/rfc5424}{\texttt{syslog}}. At the moment it only logs to a local file, but in theory the system could be configured to log to a remote syslog.
 
 The system is hosted on a micro instance from Amazon EC2, which runs the Debian GNU/Linux distribution. The system is hosted offsite, because it neccesary to keep the system running 24/7 while acquiring data and serving results to users.
 
@@ -100,7 +133,6 @@ However to showcase that the parser framework that was created is faster than Be
 \end{figure}
 
 The improvement relative to Beautiful Soup is that it is at least {\color{green} 34.50\%} faster and uses {\color{green} 430\%} less memory.
-
 
 \section{Discussion}
 
