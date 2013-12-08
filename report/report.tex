@@ -42,6 +42,15 @@ To provide an interface to the database, the ORM (Object Relational Mapper) \hre
 \\~
 \\~
 When processing the acquired data, the system has two major components; the first is the multi topic classifier, which helps identifying topics within a review, the second component does sentiment analysis, which provides a positive or negative score for a review based on affective norms from the danish version of the word list AFINN-111\cite{IMM2011-06010}. The multi topic classifier has the ability to train an infinite number of the implementation of \href{http://nltk.org/api/nltk.classify.html#module-nltk.classify.naivebayes}{\texttt{Naïve Bayes classifers}} from nltk, which the system uses to classify review text in different categories.
+\\~
+\\~
+To allow administrators to use the system, it has a number of administrative scripts. Which makes it possible to create jobs that scrape reviews for a company, scrape companies from a category and compute ratings based on the scraped reviews. Jobs are executed using \href{http://pubs.opengroup.org/onlinepubs/009696699/utilities/crontab.html}{\texttt{cron}} which is a time based job scheduler found in Linux and Unix.
+\\~
+\\~
+In addition to these components, the system has a simple website, which holds the Greasemonkey script, information about the project and a ink to the structured documentation generated with \href{http://sphinx-doc.org/}{\texttt{Sphinx}}. The website uses \href{http://getbootstrap.com/}{\texttt{Bootstrap}} with a slightly modified template from \href{http://bootswatch.com/flatly/}{\texttt{bootswatch.com}}, which makes it easy to design a website.
+\\~
+\\~
+The system is hosted on a micro instance from Amazon EC2, which runs the Debian GNU/Linux distribution. The system is hosted offsite, because it neccesary to keep the system running 24/7 while acquiring data and serving results to users.
 
 \section{Results}
 
