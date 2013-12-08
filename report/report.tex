@@ -40,6 +40,22 @@ As the project is part of the course \href{http://www.kurser.dtu.dk/02819.aspx?m
 \subsection{Data acquisition}
 The system acquires data, by scraping Trustpilot's website, for which a framework was created, that extends the functionality of Pythons built-in \href{http://docs.python.org/2/library/htmlparser.html}{\texttt{HTMLParser}}. By using this framework, it is possible to define a parser using a simple syntax - that defines what elements from a HTML page that should be acquired - which improves maintainability, while keeping the performance advantages of using an event driven parser such as HTMLParser. As an event driven parser only iterates over the data once, it provide a performance advantage over other parsers such as \href{http://www.crummy.com/software/BeautifulSoup/}{\texttt{Beautiful Soup}}, which - depending on usage - can iterate over the same data more than once.
 
+Data
+<div attribute="value"></div>
+
+Parsing pattern
+[{
+    'tag':'div',
+    'return_attributes':['attribute'],
+    'attribute_target_name':'attribute'
+ }]
+
+Result
+{'attribute': u'value'}
+
+
+The LISTING ## shows some very simple HTML which will form the base of this example. LISTING ###+1 shows a pattern for the parser framework, that defines that it is looking for a div tag, and that the value of the attribute "attribute" should be returned in a dict with the key "attribute", as Listing ###+2 also shows as the result.
+
 \subsection{Database}
 To provide an interface to the database, the ORM (Object Relational Mapper) \href{http://peewee.readthedocs.org/en/latest/}{\texttt{peewee}} is used. Peewee provides an easy to use interface between Python and a SQL database, in addition to this it provides protection against the commonly known vulnerability \href{https://www.owasp.org/index.php/Top_10_2013-A1-Injection}{\texttt{SQL injection}}.
 
