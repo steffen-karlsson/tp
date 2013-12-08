@@ -1,6 +1,7 @@
 \documentclass[10pt]{IEEEtran}
 \pdfoutput=1
 
+\usepackage{listings}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage[utf8]{inputenc}
@@ -40,22 +41,31 @@ As the project is part of the course \href{http://www.kurser.dtu.dk/02819.aspx?m
 \subsection{Data acquisition}
 The system acquires data, by scraping Trustpilot's website, for which a framework was created, that extends the functionality of Pythons built-in \href{http://docs.python.org/2/library/htmlparser.html}{\texttt{HTMLParser}}. By using this framework, it is possible to define a parser using a simple syntax - that defines what elements from a HTML page that should be acquired - which improves maintainability, while keeping the performance advantages of using an event driven parser such as HTMLParser. As an event driven parser only iterates over the data once, it provide a performance advantage over other parsers such as \href{http://www.crummy.com/software/BeautifulSoup/}{\texttt{Beautiful Soup}}, which - depending on usage - can iterate over the same data more than once.
 
-Data
-<div attribute="value"></div>
+The HTML data from figure \ref{fig:pattern} shows some very simple HTML, which will form the base of this example. The same figure shows a pattern for the parser framework, which defines that it is looking for a div tag, and that the value of the attribute "attribute" should be returned in a dict with the key "attribute", which is also shown as the result.
 
-Parsing pattern
+\begin{figure}[h!]
+\begin{lstlisting}[language=HTML]
+Data:
+<div attribute="value"></div>
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+Parsing pattern:
 [{
     'tag':'div',
     'return_attributes':['attribute'],
     'attribute_target_name':'attribute'
- }]
+}]
 
-Result
-{'attribute': u'value'}
+Result:
+{
+	'attribute': u'value'
+}
+\end{lstlisting}
+\caption{Example of parsing framework \label{fig:pattern}}
+\end{figure}
 
-
-The LISTING ## shows some very simple HTML which will form the base of this example. LISTING ###+1 shows a pattern for the parser framework, that defines that it is looking for a div tag, and that the value of the attribute "attribute" should be returned in a dict with the key "attribute", as Listing ###+2 also shows as the result.
-
+\vspace*{-5mm}
 \subsection{Database}
 To provide an interface to the database, the ORM (Object Relational Mapper) \href{http://peewee.readthedocs.org/en/latest/}{\texttt{peewee}} is used. Peewee provides an easy to use interface between Python and a SQL database, in addition to this it provides protection against the commonly known vulnerability \href{https://www.owasp.org/index.php/Top_10_2013-A1-Injection}{\texttt{SQL injection}}.
 
@@ -122,7 +132,6 @@ The system is hosted on a micro instance from Amazon EC2, which runs the Debian 
 
 \section{Results}
 By using this system, it is possible to generate the following results for three companies, one from the top, one from the middle and one from the bottom, in this order in the table \ref{fig:scores}.
-\newpage
 The same scores are shown in figure \ref{fig:scores_gui}, which also displays how the scores are integrated on Trustpilot's website, in a way that unobtrusive and elegant.
 
 \begin{figure}[h!]
@@ -131,10 +140,18 @@ The same scores are shown in figure \ref{fig:scores_gui}, which also displays ho
 	\caption{Integration of scores on Trustpilot. \label{fig:scores_gui}}
 \end{figure}
 
+\newpage
 \subsection{Code checking}
 All code in the system has been checked with \href{http://www.pylint.org/}{\texttt{Pylint}}, which helps enforce the \href{http://www.python.org/dev/peps/pep-0008/}{\texttt{PEP 8}} standard. All relevant changes from Pylint have been implemented. However there is a few notable exceptions such as; R0904 "Too many public methods" which is not relevant when extending a class and R0903 "Too few public methods" which again is not relevant when methods are provided a super class, such as in the case of the data models from peewee, which is auto-generated from the database scheme. It should be noted that these messages should be ignored, and are merely a product of the standard configuration of Pylint, and could be ignored by using a custom configuration.
 
 \subsection{Testing}
+The system has been tested, using a broad selection of test strategies from black box to unit-testing.
+Figure \ref{fig:classification} show the most informative words, for one of the many classifiers in the system. It shows that if a word such as "prices" is within a sentence, the sentence has a 13.4 times higher  chance of being classified as "Price" rather than not being.
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.48]{informative_priser.png}
+	\caption{Most informative words for the "Price" topic classifier. \label{fig:classification}}
+\end{figure}
 
 
 \subsection{Profiling}
@@ -172,11 +189,54 @@ In spite of it is always possible to improve the system, by increasing the amoun
 The scores the system is able to generate, are not necessarily a mirror of the score that Trustpilot, has as overall score for the company. An example of this could be \href{http://www.trustpilot.dk/review/www.av-connection.dk}{AV-Connection}, where the score from Trustpilot is 9.9 out of 10, where it shows from the result that the store is significantly worse at handling RMA, compared to the other categories. 
 
 \section{Conclusion}
-We have accomplished in creating a system, which is able to compute differentiated scores for companies. 
+We have accomplished creating a system, which is able to compute differentiated scores for companies. 
 
-The gamble that we took, by spending time on creating our own HTML parser framework paid off, it uses significantly less amount of memory as well as being at least 34\% faster.
+The gamble that we took, by spending time on creating our own HTML parser framework paid off, as it uses significantly less amount of memory as well as being at least 34\% faster compared to Beautiful Soup. This combination of this and running the system on a server, with a small amount of resources such as the Amazon EC2 micro instance that we are using, works well when resource utilization is high.
+\\~
+\\~
+In this project the multi topic classification improves the applicability of sentiment analysis, because just having sentiment analysis would not makes us able, to give a better score than what is already on Trustpilot.
 
 \bibliographystyle{IEEEtran}
 \bibliography{References}
+
+\clearpage
+\onecolumn
+\appendices
+
+\section{User guide}
+This is a step-by-step guide, how to use the system from a user perspective:
+\begin{enumerate}
+	\item If you are using Firefox install \texttt{Greasemonkey}\cite{GreaseMonkey}, or if you are using Chrome/Chromium and Opera \texttt{Tampermonkey}\cite{TamperMonkey} is available.
+	\item Navigate to \url{http://tp.runetm.dk/} and download the Greasemonkey/Tampermonkey script, which automatically will be installed in your browser on your permissions. \newline
+	\textbf{NB!} On the website there is information about the project and link to the structured Sphinx documentation, as well as course information.
+	\item Navigate to \url{http://www.trustpilot.dk/}.
+	\item Following companies will include the differentiated score, if you search for them:
+	\begin{itemize}
+		\item \href{http://www.trustpilot.dk/review/www.av-connection.dk}{AV-Connection}
+		\item \href{http://www.trustpilot.dk/review/www.koz.dk}{Koz Electronics}
+		\item \href{http://www.trustpilot.dk/review/www.batteribyen.dk}{batteribyen.dk}
+		\item \href{http://www.trustpilot.dk/review/www.billigflash.dk}{BilligFlash.dk}
+		\item \href{http://www.trustpilot.dk/review/www.b-o.dk}{Bang \& Olufsen Frederikshavn}
+		\item \href{http://www.trustpilot.dk/review/www.photogadget.dk}{www.photogadget.dk}
+		\item \href{http://www.trustpilot.dk/review/www.crtv.dk}{Center Radio/TV}
+		\item \href{http://www.trustpilot.dk/review/www.memoryscan.dk}{Memoryscan}
+		\item \href{http://www.trustpilot.dk/review/www.coolprices.dk}{COOLPRICES.DK}
+		\item \href{http://www.trustpilot.dk/review/tapeconnectio.dk}{Tapeconnection}
+		\item \href{http://www.trustpilot.dk/review/www.avxperten.dk}{avXperten.dk}
+		\item \href{http://www.trustpilot.dk/review/www.postmeshave.dk}{Postmeshave}
+		\item \href{http://www.trustpilot.dk/review/www.wattoo.dk}{WATTOO.DK}
+		\item \href{http://www.trustpilot.dk/review/www.renthjem.dk}{Renthjem}
+		\item \href{http://www.trustpilot.dk/review/www.syxperten-webshop.dk}{SyXperten.dk}
+		\item \href{http://www.trustpilot.dk/review/www.phonewear.dk}{PhoneWear}
+		\item \href{http://www.trustpilot.dk/review/www.phonestore.dk}{Phonestore.dk}
+		\item \href{http://www.trustpilot.dk/review/www.symaskinecenter.dk}{Symaskinecenter}
+		\item \href{http://www.trustpilot.dk/review/www.notebookonline.dk}{Bærbar.com}
+		\item \href{http://www.trustpilot.dk/review/www.conradelektronik.dk}{Conrad Elektronik Danmark}
+		\item \href{http://www.trustpilot.dk/review/www.sony.dk}{Sony}
+		\item \href{http://www.trustpilot.dk/review/www.moto-leoni.dk}{Moto Leoni}
+		\item \href{http://www.trustpilot.dk/review/www.medion.com}{MEDION}
+	\end{itemize}
+\end{enumerate}
+
 
 \end{document}
